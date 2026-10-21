@@ -6,7 +6,15 @@ __pycache__/
 tester/*.tr
 results_raw/
 aggregated_regression/
-TEST*
+TEST_*
+TEST2_*
+out*.csv
+csv_olsr_*.csv
+*.xlsx
+samples/
+mobility/
+regression_*.csv
+regression_*.json
 olsr_normal_parsed.csv
 olsr_normal_detail.json
 hasil_detail.json
