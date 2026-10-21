@@ -1,0 +1,14 @@
+# Byte-compiled / cache Python
+__pycache__/
+*.py[cod]
+
+# File trace NS-3 berukuran besar (>100 MB) & hasil sementara
+tester/*.tr
+results_raw/
+aggregated_regression/
+TEST*
+olsr_normal_parsed.csv
+olsr_normal_detail.json
+hasil_detail.json
+hasil_semua_40_detail.json
+skripParser/

@@ -1,0 +1,3681 @@
+{
+  "aodv-Baseline-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\DoS\\aodv-Baseline-dos.tr",
+    "Protokol": "AODV",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "Baseline",
+    "Nilai_Variabel": "10 node/200 m/20 km/jam",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 26,
+      "2": 26,
+      "3": 1,
+      "4": 20
+    },
+    "relay_path_distribution": {
+      "0->3->4->7": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 9,
+        "end_s": 114,
+        "duration_s": 106,
+        "lost_packets": 2567
+      },
+      {
+        "start_s": 124,
+        "end_s": 376,
+        "duration_s": 253,
+        "lost_packets": 6164
+      }
+    ],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 14,
+        "1": 12,
+        "2": 11,
+        "3": 11,
+        "4": 10,
+        "5": 10
+      },
+      "RREP": {
+        "2": 5,
+        "3": 7,
+        "4": 5,
+        "5": 3,
+        "6": 6,
+        "7": 6
+      },
+      "RERR": {
+        "2": 4,
+        "3": 7,
+        "4": 2,
+        "6": 10,
+        "7": 10
+      },
+      "HELLO": {
+        "0": 373,
+        "1": 374,
+        "2": 374,
+        "3": 374,
+        "4": 375,
+        "5": 375,
+        "6": 379,
+        "7": 379,
+        "8": 379,
+        "9": 379
+      }
+    }
+  },
+  "aodv-baseline-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\Normal\\aodv-baseline-normal.tr",
+    "Protokol": "AODV",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "Baseline",
+    "Nilai_Variabel": "10 node/200 m/20 km/jam",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 30,
+      "3": 24,
+      "4": 26,
+      "7": 1
+    },
+    "relay_path_distribution": {
+      "0->3->4->7": 9077
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 3,
+        "1": 2,
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "5": 1
+      },
+      "RREP": {
+        "3": 4,
+        "4": 3,
+        "6": 2,
+        "7": 3
+      },
+      "RERR": {
+        "6": 1
+      },
+      "HELLO": {
+        "0": 377,
+        "1": 378,
+        "2": 378,
+        "3": 379,
+        "4": 379,
+        "5": 379,
+        "6": 379,
+        "7": 379,
+        "8": 379,
+        "9": 379
+      }
+    }
+  },
+  "olsr-Baseline-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\DoS\\olsr-Baseline-dos.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "Baseline",
+    "Nilai_Variabel": "10 node/200 m/20 km/jam",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 296,
+      "3": 10,
+      "4": 10354,
+      "5": 11515,
+      "6": 196,
+      "7": 293
+    },
+    "relay_path_distribution": {
+      "0->3->5->7": 870,
+      "0->3->4->6": 609,
+      "0->3->4->7": 313,
+      "0->3->5->6": 210,
+      "0->2->5->7": 94,
+      "0->3->5->4->6": 90,
+      "0->3->5->4->7": 49,
+      "0->1->3->4->7": 43,
+      "0->2->4->7": 37,
+      "0->3->4->5->7": 26,
+      "0->2->4->6": 25,
+      "0->2->5->6": 3,
+      "0->3->4->6->7->9": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 11,
+        "end_s": 65,
+        "duration_s": 55,
+        "lost_packets": 947
+      },
+      {
+        "start_s": 70,
+        "end_s": 115,
+        "duration_s": 46,
+        "lost_packets": 976
+      },
+      {
+        "start_s": 118,
+        "end_s": 125,
+        "duration_s": 8,
+        "lost_packets": 147
+      },
+      {
+        "start_s": 132,
+        "end_s": 160,
+        "duration_s": 29,
+        "lost_packets": 501
+      },
+      {
+        "start_s": 165,
+        "end_s": 166,
+        "duration_s": 2,
+        "lost_packets": 13
+      },
+      {
+        "start_s": 171,
+        "end_s": 195,
+        "duration_s": 25,
+        "lost_packets": 402
+      },
+      {
+        "start_s": 200,
+        "end_s": 215,
+        "duration_s": 16,
+        "lost_packets": 236
+      },
+      {
+        "start_s": 220,
+        "end_s": 376,
+        "duration_s": 157,
+        "lost_packets": 2585
+      }
+    ],
+    "olsr_hello_per_node": {
+      "0": 190,
+      "1": 190,
+      "2": 190,
+      "3": 190,
+      "4": 190,
+      "5": 190,
+      "6": 190,
+      "7": 190,
+      "8": 190,
+      "9": 190
+    },
+    "olsr_tc_per_node": {
+      "1": 5,
+      "3": 247,
+      "4": 130,
+      "5": 176,
+      "6": 43,
+      "7": 108
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "olsr-baseline-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\Normal\\olsr-baseline-normal.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "Baseline",
+    "Nilai_Variabel": "10 node/200 m/20 km/jam",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 13,
+      "3": 14,
+      "5": 20,
+      "6": 1
+    },
+    "relay_path_distribution": {
+      "0->3->5->6": 8935
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {
+      "0": 190,
+      "1": 190,
+      "2": 190,
+      "3": 190,
+      "4": 190,
+      "5": 190,
+      "6": 190,
+      "7": 190,
+      "8": 190,
+      "9": 190
+    },
+    "olsr_tc_per_node": {
+      "3": 219,
+      "5": 215,
+      "7": 217
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "aodv-a-n20-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\DoS\\aodv-a-n20-dos.tr",
+    "Protokol": "AODV",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "A",
+    "Nilai_Variabel": "20",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 2460,
+      "1": 576,
+      "9": 1,
+      "12": 457,
+      "13": 850,
+      "14": 2073,
+      "15": 2144,
+      "16": 44,
+      "17": 26
+    },
+    "relay_path_distribution": {
+      "0": 1072,
+      "0->12->15->16": 279,
+      "0->13->15->16": 71,
+      "0->13->14->16": 54,
+      "0->12->14->17": 51,
+      "0->13->15->17": 43,
+      "0->12->14->16": 34,
+      "0->1->13": 31,
+      "0->12->15->17": 31,
+      "0->13": 29,
+      "0->13->14->17": 20,
+      "0->13->14": 19,
+      "0->13->15": 16,
+      "0->12->15": 7,
+      "0->9": 2,
+      "0->12->14": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 15,
+        "end_s": 119,
+        "duration_s": 105,
+        "lost_packets": 2541
+      },
+      {
+        "start_s": 130,
+        "end_s": 130,
+        "duration_s": 1,
+        "lost_packets": 9
+      },
+      {
+        "start_s": 140,
+        "end_s": 145,
+        "duration_s": 6,
+        "lost_packets": 117
+      },
+      {
+        "start_s": 149,
+        "end_s": 150,
+        "duration_s": 2,
+        "lost_packets": 70
+      },
+      {
+        "start_s": 159,
+        "end_s": 161,
+        "duration_s": 3,
+        "lost_packets": 43
+      },
+      {
+        "start_s": 171,
+        "end_s": 171,
+        "duration_s": 1,
+        "lost_packets": 19
+      },
+      {
+        "start_s": 185,
+        "end_s": 187,
+        "duration_s": 3,
+        "lost_packets": 96
+      },
+      {
+        "start_s": 196,
+        "end_s": 198,
+        "duration_s": 3,
+        "lost_packets": 59
+      },
+      {
+        "start_s": 218,
+        "end_s": 218,
+        "duration_s": 1,
+        "lost_packets": 9
+      },
+      {
+        "start_s": 228,
+        "end_s": 228,
+        "duration_s": 1,
+        "lost_packets": 7
+      },
+      {
+        "start_s": 231,
+        "end_s": 235,
+        "duration_s": 5,
+        "lost_packets": 137
+      },
+      {
+        "start_s": 238,
+        "end_s": 241,
+        "duration_s": 4,
+        "lost_packets": 104
+      },
+      {
+        "start_s": 250,
+        "end_s": 251,
+        "duration_s": 2,
+        "lost_packets": 29
+      },
+      {
+        "start_s": 261,
+        "end_s": 261,
+        "duration_s": 1,
+        "lost_packets": 17
+      },
+      {
+        "start_s": 264,
+        "end_s": 265,
+        "duration_s": 2,
+        "lost_packets": 67
+      },
+      {
+        "start_s": 274,
+        "end_s": 274,
+        "duration_s": 1,
+        "lost_packets": 9
+      },
+      {
+        "start_s": 278,
+        "end_s": 279,
+        "duration_s": 2,
+        "lost_packets": 74
+      },
+      {
+        "start_s": 282,
+        "end_s": 287,
+        "duration_s": 6,
+        "lost_packets": 161
+      },
+      {
+        "start_s": 317,
+        "end_s": 317,
+        "duration_s": 1,
+        "lost_packets": 8
+      },
+      {
+        "start_s": 326,
+        "end_s": 327,
+        "duration_s": 2,
+        "lost_packets": 22
+      },
+      {
+        "start_s": 331,
+        "end_s": 333,
+        "duration_s": 3,
+        "lost_packets": 116
+      },
+      {
+        "start_s": 343,
+        "end_s": 344,
+        "duration_s": 2,
+        "lost_packets": 33
+      },
+      {
+        "start_s": 348,
+        "end_s": 348,
+        "duration_s": 1,
+        "lost_packets": 69
+      },
+      {
+        "start_s": 351,
+        "end_s": 352,
+        "duration_s": 2,
+        "lost_packets": 85
+      },
+      {
+        "start_s": 362,
+        "end_s": 362,
+        "duration_s": 1,
+        "lost_packets": 18
+      },
+      {
+        "start_s": 373,
+        "end_s": 377,
+        "duration_s": 5,
+        "lost_packets": 111
+      },
+      {
+        "start_s": 386,
+        "end_s": 387,
+        "duration_s": 2,
+        "lost_packets": 26
+      },
+      {
+        "start_s": 391,
+        "end_s": 393,
+        "duration_s": 3,
+        "lost_packets": 114
+      },
+      {
+        "start_s": 397,
+        "end_s": 400,
+        "duration_s": 4,
+        "lost_packets": 121
+      },
+      {
+        "start_s": 403,
+        "end_s": 405,
+        "duration_s": 3,
+        "lost_packets": 86
+      },
+      {
+        "start_s": 414,
+        "end_s": 419,
+        "duration_s": 6,
+        "lost_packets": 104
+      },
+      {
+        "start_s": 423,
+        "end_s": 425,
+        "duration_s": 3,
+        "lost_packets": 104
+      },
+      {
+        "start_s": 435,
+        "end_s": 435,
+        "duration_s": 1,
+        "lost_packets": 10
+      },
+      {
+        "start_s": 438,
+        "end_s": 439,
+        "duration_s": 2,
+        "lost_packets": 69
+      },
+      {
+        "start_s": 442,
+        "end_s": 447,
+        "duration_s": 6,
+        "lost_packets": 176
+      },
+      {
+        "start_s": 451,
+        "end_s": 453,
+        "duration_s": 3,
+        "lost_packets": 99
+      },
+      {
+        "start_s": 463,
+        "end_s": 469,
+        "duration_s": 7,
+        "lost_packets": 123
+      },
+      {
+        "start_s": 479,
+        "end_s": 480,
+        "duration_s": 2,
+        "lost_packets": 25
+      },
+      {
+        "start_s": 491,
+        "end_s": 498,
+        "duration_s": 8,
+        "lost_packets": 155
+      },
+      {
+        "start_s": 507,
+        "end_s": 512,
+        "duration_s": 6,
+        "lost_packets": 88
+      }
+    ],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 461,
+        "1": 427,
+        "12": 376,
+        "13": 379,
+        "14": 298,
+        "15": 306,
+        "16": 1,
+        "17": 1
+      },
+      "RREP": {
+        "0": 9,
+        "1": 36,
+        "2": 2,
+        "3": 2,
+        "4": 1,
+        "5": 2,
+        "6": 2,
+        "7": 1,
+        "8": 2,
+        "9": 2,
+        "10": 1,
+        "11": 2,
+        "12": 178,
+        "13": 234,
+        "14": 226,
+        "15": 215,
+        "16": 283,
+        "17": 284,
+        "18": 1,
+        "19": 2
+      },
+      "RERR": {
+        "0": 6,
+        "1": 83,
+        "12": 554,
+        "13": 651,
+        "14": 575,
+        "15": 693,
+        "16": 34,
+        "17": 33
+      },
+      "HELLO": {
+        "0": 381,
+        "1": 382,
+        "2": 559,
+        "3": 559,
+        "4": 559,
+        "5": 559,
+        "6": 559,
+        "7": 559,
+        "8": 559,
+        "9": 559,
+        "10": 559,
+        "11": 559,
+        "12": 403,
+        "13": 403,
+        "14": 437,
+        "15": 437,
+        "16": 559,
+        "17": 559,
+        "18": 559,
+        "19": 559
+      }
+    }
+  },
+  "aodv-a-n20-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\Normal\\aodv-a-n20-normal.tr",
+    "Protokol": "AODV",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "A",
+    "Nilai_Variabel": "20",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 47,
+      "13": 40,
+      "14": 40,
+      "17": 31
+    },
+    "relay_path_distribution": {
+      "0->13->14->17": 10642,
+      "0": 1072,
+      "0->13->14": 879,
+      "0->13": 879
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 3,
+        "1": 2,
+        "12": 2,
+        "13": 1,
+        "14": 1,
+        "15": 2
+      },
+      "RREP": {
+        "12": 3,
+        "13": 4,
+        "14": 5,
+        "15": 2,
+        "16": 4,
+        "17": 6
+      },
+      "RERR": {
+        "16": 2
+      },
+      "HELLO": {
+        "0": 558,
+        "1": 558,
+        "2": 559,
+        "3": 559,
+        "4": 559,
+        "5": 559,
+        "6": 559,
+        "7": 559,
+        "8": 559,
+        "9": 559,
+        "10": 559,
+        "11": 559,
+        "12": 558,
+        "13": 559,
+        "14": 559,
+        "15": 558,
+        "16": 559,
+        "17": 559,
+        "18": 559,
+        "19": 559
+      }
+    }
+  },
+  "olsr-a-n20-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\DoS\\olsr-a-n20-dos.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "A",
+    "Nilai_Variabel": "20",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 2854,
+      "6": 1,
+      "12": 2313,
+      "13": 1191,
+      "14": 7206,
+      "15": 13440,
+      "16": 150,
+      "17": 429
+    },
+    "relay_path_distribution": {
+      "0->12->15->17": 1300,
+      "0->12->14->17": 564,
+      "0->12->15->16": 528,
+      "0->12->14->16": 277,
+      "0->12": 178,
+      "0->12->14->15->17": 78,
+      "0->12->14": 78,
+      "0->13->14": 61,
+      "0->12->15->14->16": 41,
+      "0->12->14->15->16": 28,
+      "0->13->12->14": 17,
+      "0->12->15->14->17": 15,
+      "0->1->12->14->15->16": 15,
+      "0->5": 2,
+      "0->12->17": 1,
+      "0->6": 1,
+      "0->4": 1,
+      "0->12->19": 1,
+      "0->13->14->17": 1,
+      "0->7": 1,
+      "0->12->15->4": 1,
+      "0->9": 1,
+      "0->12->15->10": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 10,
+        "end_s": 112,
+        "duration_s": 103,
+        "lost_packets": 1847
+      },
+      {
+        "start_s": 120,
+        "end_s": 122,
+        "duration_s": 3,
+        "lost_packets": 55
+      },
+      {
+        "start_s": 125,
+        "end_s": 134,
+        "duration_s": 10,
+        "lost_packets": 42
+      },
+      {
+        "start_s": 141,
+        "end_s": 345,
+        "duration_s": 205,
+        "lost_packets": 4035
+      },
+      {
+        "start_s": 350,
+        "end_s": 355,
+        "duration_s": 6,
+        "lost_packets": 129
+      },
+      {
+        "start_s": 365,
+        "end_s": 494,
+        "duration_s": 130,
+        "lost_packets": 2255
+      },
+      {
+        "start_s": 502,
+        "end_s": 514,
+        "duration_s": 13,
+        "lost_packets": 114
+      }
+    ],
+    "olsr_hello_per_node": {
+      "0": 280,
+      "1": 280,
+      "2": 280,
+      "3": 280,
+      "4": 280,
+      "5": 280,
+      "6": 280,
+      "7": 280,
+      "8": 280,
+      "9": 280,
+      "10": 280,
+      "11": 280,
+      "12": 280,
+      "13": 280,
+      "14": 280,
+      "15": 280,
+      "16": 280,
+      "17": 280,
+      "18": 280,
+      "19": 280
+    },
+    "olsr_tc_per_node": {
+      "0": 22,
+      "1": 1,
+      "2": 291,
+      "3": 63,
+      "4": 321,
+      "5": 259,
+      "6": 24,
+      "7": 403,
+      "8": 8,
+      "9": 367,
+      "10": 9,
+      "11": 4,
+      "12": 34,
+      "13": 492,
+      "14": 282,
+      "15": 315,
+      "16": 67,
+      "17": 342,
+      "19": 348
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "olsr-a-n20-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\Normal\\olsr-a-n20-normal.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "A",
+    "Nilai_Variabel": "20",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 36,
+      "12": 29,
+      "15": 27,
+      "17": 23
+    },
+    "relay_path_distribution": {
+      "0->12->15->17": 10563,
+      "0->12": 872,
+      "0->12->15": 867,
+      "0": 310,
+      "0->12->15->11": 3,
+      "0->12->9": 3,
+      "0->12->14": 3,
+      "0->12->3": 3,
+      "0->13": 2,
+      "0->4": 2,
+      "0->5": 2,
+      "0->12->15->5": 2,
+      "0->12->15->8": 1,
+      "0->12->15->10": 1,
+      "0->12->15->7": 1,
+      "0->9": 1
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {
+      "0": 280,
+      "1": 280,
+      "2": 280,
+      "3": 280,
+      "4": 280,
+      "5": 280,
+      "6": 280,
+      "7": 280,
+      "8": 280,
+      "9": 280,
+      "10": 280,
+      "11": 280,
+      "12": 280,
+      "13": 280,
+      "14": 280,
+      "15": 280,
+      "16": 280,
+      "17": 280,
+      "18": 280,
+      "19": 280
+    },
+    "olsr_tc_per_node": {
+      "2": 542,
+      "3": 8,
+      "4": 509,
+      "7": 465,
+      "9": 411,
+      "13": 601,
+      "15": 607,
+      "16": 8,
+      "17": 585,
+      "19": 571
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "aodv-a-n30-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\DoS\\aodv-a-n30-dos.tr",
+    "Protokol": "AODV",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "A",
+    "Nilai_Variabel": "30",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 2356,
+      "1": 221,
+      "12": 548,
+      "23": 661,
+      "24": 1498,
+      "25": 1824,
+      "26": 23,
+      "27": 54
+    },
+    "relay_path_distribution": {
+      "0": 1083,
+      "0->23->24->27": 182,
+      "0->12->25->26": 58,
+      "0->12->25->27": 46,
+      "0->12->24->27": 44,
+      "0->23->25->27": 29,
+      "0->23->25->26": 19,
+      "0->23->24->26": 18,
+      "0->1->12": 14,
+      "0->12->24->26": 12,
+      "0->23->25": 8,
+      "0->23": 7
+    },
+    "loss_windows": [
+      {
+        "start_s": 5,
+        "end_s": 110,
+        "duration_s": 106,
+        "lost_packets": 2567
+      },
+      {
+        "start_s": 121,
+        "end_s": 122,
+        "duration_s": 2,
+        "lost_packets": 55
+      },
+      {
+        "start_s": 125,
+        "end_s": 125,
+        "duration_s": 1,
+        "lost_packets": 3
+      },
+      {
+        "start_s": 131,
+        "end_s": 131,
+        "duration_s": 1,
+        "lost_packets": 1
+      },
+      {
+        "start_s": 135,
+        "end_s": 136,
+        "duration_s": 2,
+        "lost_packets": 86
+      },
+      {
+        "start_s": 139,
+        "end_s": 334,
+        "duration_s": 196,
+        "lost_packets": 4815
+      },
+      {
+        "start_s": 343,
+        "end_s": 344,
+        "duration_s": 2,
+        "lost_packets": 7
+      },
+      {
+        "start_s": 353,
+        "end_s": 354,
+        "duration_s": 2,
+        "lost_packets": 20
+      },
+      {
+        "start_s": 357,
+        "end_s": 358,
+        "duration_s": 2,
+        "lost_packets": 83
+      },
+      {
+        "start_s": 368,
+        "end_s": 368,
+        "duration_s": 1,
+        "lost_packets": 11
+      },
+      {
+        "start_s": 378,
+        "end_s": 379,
+        "duration_s": 2,
+        "lost_packets": 53
+      },
+      {
+        "start_s": 389,
+        "end_s": 389,
+        "duration_s": 1,
+        "lost_packets": 17
+      },
+      {
+        "start_s": 400,
+        "end_s": 403,
+        "duration_s": 4,
+        "lost_packets": 93
+      },
+      {
+        "start_s": 412,
+        "end_s": 414,
+        "duration_s": 3,
+        "lost_packets": 40
+      },
+      {
+        "start_s": 417,
+        "end_s": 420,
+        "duration_s": 4,
+        "lost_packets": 114
+      },
+      {
+        "start_s": 430,
+        "end_s": 430,
+        "duration_s": 1,
+        "lost_packets": 33
+      },
+      {
+        "start_s": 433,
+        "end_s": 436,
+        "duration_s": 4,
+        "lost_packets": 120
+      },
+      {
+        "start_s": 440,
+        "end_s": 441,
+        "duration_s": 2,
+        "lost_packets": 92
+      },
+      {
+        "start_s": 461,
+        "end_s": 463,
+        "duration_s": 3,
+        "lost_packets": 61
+      },
+      {
+        "start_s": 467,
+        "end_s": 468,
+        "duration_s": 2,
+        "lost_packets": 74
+      },
+      {
+        "start_s": 477,
+        "end_s": 483,
+        "duration_s": 7,
+        "lost_packets": 142
+      },
+      {
+        "start_s": 487,
+        "end_s": 488,
+        "duration_s": 2,
+        "lost_packets": 84
+      },
+      {
+        "start_s": 492,
+        "end_s": 494,
+        "duration_s": 3,
+        "lost_packets": 94
+      },
+      {
+        "start_s": 497,
+        "end_s": 499,
+        "duration_s": 3,
+        "lost_packets": 94
+      },
+      {
+        "start_s": 508,
+        "end_s": 508,
+        "duration_s": 1,
+        "lost_packets": 9
+      },
+      {
+        "start_s": 512,
+        "end_s": 512,
+        "duration_s": 1,
+        "lost_packets": 72
+      },
+      {
+        "start_s": 522,
+        "end_s": 522,
+        "duration_s": 1,
+        "lost_packets": 19
+      },
+      {
+        "start_s": 526,
+        "end_s": 528,
+        "duration_s": 3,
+        "lost_packets": 97
+      },
+      {
+        "start_s": 531,
+        "end_s": 533,
+        "duration_s": 3,
+        "lost_packets": 99
+      },
+      {
+        "start_s": 542,
+        "end_s": 542,
+        "duration_s": 1,
+        "lost_packets": 8
+      },
+      {
+        "start_s": 552,
+        "end_s": 554,
+        "duration_s": 3,
+        "lost_packets": 48
+      },
+      {
+        "start_s": 557,
+        "end_s": 559,
+        "duration_s": 3,
+        "lost_packets": 82
+      },
+      {
+        "start_s": 568,
+        "end_s": 568,
+        "duration_s": 1,
+        "lost_packets": 8
+      },
+      {
+        "start_s": 578,
+        "end_s": 579,
+        "duration_s": 2,
+        "lost_packets": 52
+      },
+      {
+        "start_s": 583,
+        "end_s": 583,
+        "duration_s": 1,
+        "lost_packets": 64
+      },
+      {
+        "start_s": 592,
+        "end_s": 592,
+        "duration_s": 1,
+        "lost_packets": 10
+      },
+      {
+        "start_s": 602,
+        "end_s": 602,
+        "duration_s": 1,
+        "lost_packets": 10
+      },
+      {
+        "start_s": 605,
+        "end_s": 607,
+        "duration_s": 3,
+        "lost_packets": 86
+      },
+      {
+        "start_s": 610,
+        "end_s": 610,
+        "duration_s": 1,
+        "lost_packets": 67
+      },
+      {
+        "start_s": 620,
+        "end_s": 620,
+        "duration_s": 1,
+        "lost_packets": 8
+      },
+      {
+        "start_s": 634,
+        "end_s": 647,
+        "duration_s": 14,
+        "lost_packets": 391
+      },
+      {
+        "start_s": 651,
+        "end_s": 652,
+        "duration_s": 2,
+        "lost_packets": 79
+      },
+      {
+        "start_s": 656,
+        "end_s": 660,
+        "duration_s": 5,
+        "lost_packets": 166
+      },
+      {
+        "start_s": 671,
+        "end_s": 681,
+        "duration_s": 11,
+        "lost_packets": 265
+      },
+      {
+        "start_s": 685,
+        "end_s": 687,
+        "duration_s": 3,
+        "lost_packets": 98
+      }
+    ],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 413,
+        "1": 381,
+        "2": 9,
+        "3": 9,
+        "4": 9,
+        "5": 9,
+        "6": 9,
+        "7": 9,
+        "8": 9,
+        "9": 9,
+        "10": 9,
+        "11": 9,
+        "12": 338,
+        "13": 9,
+        "14": 9,
+        "15": 9,
+        "16": 9,
+        "17": 9,
+        "18": 9,
+        "19": 9,
+        "20": 9,
+        "21": 9,
+        "22": 9,
+        "23": 342,
+        "24": 255,
+        "25": 262,
+        "26": 11,
+        "27": 10,
+        "28": 5,
+        "29": 10
+      },
+      "RREP": {
+        "0": 2,
+        "1": 21,
+        "12": 184,
+        "23": 148,
+        "24": 165,
+        "25": 174,
+        "26": 221,
+        "27": 221,
+        "28": 5
+      },
+      "RERR": {
+        "0": 8,
+        "1": 32,
+        "12": 565,
+        "23": 707,
+        "24": 651,
+        "25": 579,
+        "26": 62,
+        "27": 49
+      },
+      "HELLO": {
+        "0": 573,
+        "1": 572,
+        "2": 737,
+        "3": 737,
+        "4": 737,
+        "5": 737,
+        "6": 737,
+        "7": 737,
+        "8": 737,
+        "9": 737,
+        "10": 737,
+        "11": 737,
+        "12": 587,
+        "13": 737,
+        "14": 737,
+        "15": 737,
+        "16": 737,
+        "17": 737,
+        "18": 737,
+        "19": 737,
+        "20": 737,
+        "21": 737,
+        "22": 737,
+        "23": 587,
+        "24": 624,
+        "25": 623,
+        "26": 737,
+        "27": 737,
+        "28": 738,
+        "29": 737
+      }
+    }
+  },
+  "aodv-a-n30-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\Normal\\aodv-a-n30-normal.tr",
+    "Protokol": "AODV",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "A",
+    "Nilai_Variabel": "30",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 52,
+      "12": 46,
+      "24": 53,
+      "27": 51
+    },
+    "relay_path_distribution": {
+      "0->12->24->27": 15035,
+      "0": 1048,
+      "0->12->24": 903,
+      "0->12": 879
+    },
+    "loss_windows": [
+      {
+        "start_s": 5,
+        "end_s": 5,
+        "duration_s": 1,
+        "lost_packets": 1
+      }
+    ],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 4,
+        "1": 3,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2,
+        "13": 1,
+        "14": 1,
+        "15": 1,
+        "16": 1,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1,
+        "21": 1,
+        "22": 1,
+        "23": 3,
+        "24": 2,
+        "25": 3,
+        "26": 1,
+        "27": 1,
+        "29": 1
+      },
+      "RREP": {
+        "12": 4,
+        "23": 3,
+        "24": 5,
+        "25": 2,
+        "26": 4,
+        "27": 6,
+        "28": 1
+      },
+      "RERR": {
+        "12": 2,
+        "23": 4,
+        "24": 1,
+        "26": 13,
+        "27": 8
+      },
+      "HELLO": {
+        "0": 738,
+        "1": 738,
+        "2": 739,
+        "3": 739,
+        "4": 738,
+        "5": 738,
+        "6": 738,
+        "7": 739,
+        "8": 739,
+        "9": 739,
+        "10": 739,
+        "11": 738,
+        "12": 738,
+        "13": 739,
+        "14": 739,
+        "15": 739,
+        "16": 738,
+        "17": 738,
+        "18": 738,
+        "19": 738,
+        "20": 739,
+        "21": 739,
+        "22": 739,
+        "23": 738,
+        "24": 738,
+        "25": 738,
+        "26": 739,
+        "27": 739,
+        "28": 739,
+        "29": 739
+      }
+    }
+  },
+  "olsr-a-n30-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\DoS\\olsr-a-n30-dos.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "A",
+    "Nilai_Variabel": "30",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 8430,
+      "12": 4599,
+      "23": 8942,
+      "24": 6178,
+      "25": 12836,
+      "26": 238,
+      "27": 292,
+      "29": 9
+    },
+    "relay_path_distribution": {
+      "0->12->25->27": 660,
+      "0->12->24->29": 622,
+      "0->12->24->26": 604,
+      "0->29->24": 583,
+      "0->23->24->29": 570,
+      "0->25->24->29": 401,
+      "0->23->24": 354,
+      "0->23->27->26": 337,
+      "0->12->25->26": 273,
+      "0->12->24": 265,
+      "0->25->27": 194,
+      "0->12->24->27": 99,
+      "0->23->29": 87,
+      "0->23->27->29": 68,
+      "0->25->12->24": 48,
+      "0->25->24->26": 42,
+      "0->12->24->25->27": 41,
+      "0->29->24->13": 40,
+      "0->29->24->26": 37,
+      "0->12->23->27->29": 36,
+      "0->25->23->29": 35,
+      "0->23->12->24->29": 31,
+      "0->12->23->24->29": 23,
+      "0->12->25->24->26": 22,
+      "0->25->12->24->29": 21,
+      "0->25->23->27->26": 12,
+      "0->29->24->9": 5,
+      "0->12->23->27->26": 1,
+      "0->25->23->24": 1,
+      "0->12->24->27->26": 1,
+      "0->29->24->11": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 10,
+        "end_s": 30,
+        "duration_s": 21,
+        "lost_packets": 233
+      },
+      {
+        "start_s": 35,
+        "end_s": 60,
+        "duration_s": 26,
+        "lost_packets": 386
+      },
+      {
+        "start_s": 66,
+        "end_s": 112,
+        "duration_s": 47,
+        "lost_packets": 667
+      },
+      {
+        "start_s": 115,
+        "end_s": 115,
+        "duration_s": 1,
+        "lost_packets": 1
+      },
+      {
+        "start_s": 120,
+        "end_s": 122,
+        "duration_s": 3,
+        "lost_packets": 3
+      },
+      {
+        "start_s": 126,
+        "end_s": 128,
+        "duration_s": 3,
+        "lost_packets": 29
+      },
+      {
+        "start_s": 134,
+        "end_s": 136,
+        "duration_s": 3,
+        "lost_packets": 3
+      },
+      {
+        "start_s": 140,
+        "end_s": 203,
+        "duration_s": 64,
+        "lost_packets": 1127
+      },
+      {
+        "start_s": 208,
+        "end_s": 208,
+        "duration_s": 1,
+        "lost_packets": 6
+      },
+      {
+        "start_s": 216,
+        "end_s": 224,
+        "duration_s": 9,
+        "lost_packets": 51
+      },
+      {
+        "start_s": 228,
+        "end_s": 234,
+        "duration_s": 7,
+        "lost_packets": 5
+      },
+      {
+        "start_s": 237,
+        "end_s": 274,
+        "duration_s": 38,
+        "lost_packets": 532
+      },
+      {
+        "start_s": 278,
+        "end_s": 319,
+        "duration_s": 42,
+        "lost_packets": 720
+      },
+      {
+        "start_s": 322,
+        "end_s": 358,
+        "duration_s": 37,
+        "lost_packets": 717
+      },
+      {
+        "start_s": 362,
+        "end_s": 486,
+        "duration_s": 125,
+        "lost_packets": 2113
+      },
+      {
+        "start_s": 495,
+        "end_s": 500,
+        "duration_s": 6,
+        "lost_packets": 50
+      },
+      {
+        "start_s": 506,
+        "end_s": 512,
+        "duration_s": 7,
+        "lost_packets": 66
+      },
+      {
+        "start_s": 520,
+        "end_s": 536,
+        "duration_s": 17,
+        "lost_packets": 194
+      },
+      {
+        "start_s": 556,
+        "end_s": 564,
+        "duration_s": 9,
+        "lost_packets": 129
+      },
+      {
+        "start_s": 568,
+        "end_s": 578,
+        "duration_s": 11,
+        "lost_packets": 166
+      },
+      {
+        "start_s": 584,
+        "end_s": 584,
+        "duration_s": 1,
+        "lost_packets": 2
+      },
+      {
+        "start_s": 602,
+        "end_s": 602,
+        "duration_s": 1,
+        "lost_packets": 5
+      },
+      {
+        "start_s": 628,
+        "end_s": 628,
+        "duration_s": 1,
+        "lost_packets": 3
+      },
+      {
+        "start_s": 655,
+        "end_s": 665,
+        "duration_s": 11,
+        "lost_packets": 168
+      },
+      {
+        "start_s": 695,
+        "end_s": 696,
+        "duration_s": 2,
+        "lost_packets": 23
+      }
+    ],
+    "olsr_hello_per_node": {
+      "0": 370,
+      "1": 370,
+      "2": 370,
+      "3": 370,
+      "4": 370,
+      "5": 370,
+      "6": 370,
+      "7": 370,
+      "8": 370,
+      "9": 370,
+      "10": 370,
+      "11": 370,
+      "12": 370,
+      "13": 370,
+      "14": 370,
+      "15": 370,
+      "16": 370,
+      "17": 370,
+      "18": 370,
+      "19": 370,
+      "20": 370,
+      "21": 370,
+      "22": 370,
+      "23": 370,
+      "24": 370,
+      "25": 370,
+      "26": 370,
+      "27": 370,
+      "28": 370,
+      "29": 370
+    },
+    "olsr_tc_per_node": {
+      "0": 436,
+      "1": 3,
+      "2": 140,
+      "3": 286,
+      "4": 441,
+      "5": 472,
+      "6": 17,
+      "7": 737,
+      "8": 515,
+      "9": 716,
+      "10": 923,
+      "11": 503,
+      "12": 171,
+      "13": 836,
+      "14": 6,
+      "15": 581,
+      "16": 39,
+      "17": 21,
+      "18": 516,
+      "19": 156,
+      "20": 404,
+      "21": 1,
+      "22": 107,
+      "23": 477,
+      "24": 359,
+      "25": 225,
+      "26": 328,
+      "27": 250,
+      "28": 158,
+      "29": 152
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "olsr-a-n30-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\Normal\\olsr-a-n30-normal.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "A",
+    "Nilai_Variabel": "30",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 25,
+      "12": 12,
+      "24": 25,
+      "25": 1962,
+      "26": 3,
+      "27": 731,
+      "29": 18
+    },
+    "relay_path_distribution": {
+      "0->27->24": 3317,
+      "0->12->27->26": 2405,
+      "0->25->24->29": 2283,
+      "0->12->25->27": 2227,
+      "0->12->24": 1757,
+      "0->29->24": 1581,
+      "0->12->25->26": 1057,
+      "0->12->27->29": 925,
+      "0->25->27": 576,
+      "0->23->29": 443,
+      "0->12->24->26": 259,
+      "0->12->24->29": 186,
+      "0->25->24->26": 73,
+      "0->25->12->27->26": 41,
+      "0->23->24": 5,
+      "0->25->24->29->26": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 54,
+        "end_s": 58,
+        "duration_s": 5,
+        "lost_packets": 103
+      },
+      {
+        "start_s": 183,
+        "end_s": 188,
+        "duration_s": 6,
+        "lost_packets": 108
+      },
+      {
+        "start_s": 210,
+        "end_s": 210,
+        "duration_s": 1,
+        "lost_packets": 4
+      },
+      {
+        "start_s": 290,
+        "end_s": 294,
+        "duration_s": 5,
+        "lost_packets": 110
+      },
+      {
+        "start_s": 395,
+        "end_s": 400,
+        "duration_s": 6,
+        "lost_packets": 120
+      }
+    ],
+    "olsr_hello_per_node": {
+      "0": 370,
+      "1": 370,
+      "2": 370,
+      "3": 370,
+      "4": 370,
+      "5": 370,
+      "6": 370,
+      "7": 370,
+      "8": 370,
+      "9": 370,
+      "10": 370,
+      "11": 370,
+      "12": 370,
+      "13": 370,
+      "14": 370,
+      "15": 370,
+      "16": 370,
+      "17": 370,
+      "18": 370,
+      "19": 370,
+      "20": 370,
+      "21": 370,
+      "22": 370,
+      "23": 370,
+      "24": 370,
+      "25": 370,
+      "26": 370,
+      "27": 370,
+      "28": 370,
+      "29": 370
+    },
+    "olsr_tc_per_node": {
+      "0": 503,
+      "1": 3,
+      "3": 410,
+      "4": 259,
+      "5": 607,
+      "6": 15,
+      "7": 723,
+      "8": 516,
+      "9": 698,
+      "10": 926,
+      "11": 504,
+      "12": 12,
+      "13": 829,
+      "14": 9,
+      "15": 572,
+      "16": 34,
+      "17": 24,
+      "18": 511,
+      "19": 150,
+      "20": 405,
+      "22": 97,
+      "23": 790,
+      "24": 742,
+      "25": 27,
+      "26": 460,
+      "27": 299,
+      "28": 260,
+      "29": 202
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "aodv-b-j100-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\DoS\\aodv-b-j100-dos.tr",
+    "Protokol": "AODV",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "100",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 82,
+      "4": 5
+    },
+    "relay_path_distribution": {
+      "0": 1511,
+      "0->4": 18
+    },
+    "loss_windows": [
+      {
+        "start_s": 215,
+        "end_s": 216,
+        "duration_s": 2,
+        "lost_packets": 9
+      }
+    ],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 3,
+        "1": 1
+      },
+      "RREP": {
+        "1": 1,
+        "2": 4,
+        "3": 4,
+        "4": 4,
+        "5": 4,
+        "6": 4,
+        "7": 4
+      },
+      "RERR": {
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 2,
+        "5": 1,
+        "7": 1
+      },
+      "HELLO": {
+        "0": 306,
+        "1": 307,
+        "2": 307,
+        "3": 307,
+        "4": 307,
+        "5": 307,
+        "6": 307,
+        "7": 307,
+        "8": 307,
+        "9": 307
+      }
+    }
+  },
+  "aodv-b-j100-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\Normal\\aodv-b-j100-normal.tr",
+    "Protokol": "AODV",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "100",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 16,
+      "2": 3
+    },
+    "relay_path_distribution": {
+      "0->2": 5813,
+      "0": 1511
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 2,
+        "1": 1,
+        "2": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "9": 1
+      },
+      "RREP": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1
+      },
+      "RERR": {
+        "2": 1,
+        "3": 2,
+        "4": 1,
+        "5": 1,
+        "6": 2,
+        "7": 1
+      },
+      "HELLO": {
+        "0": 306,
+        "1": 307,
+        "2": 307,
+        "3": 307,
+        "4": 307,
+        "5": 307,
+        "6": 307,
+        "7": 307,
+        "8": 307,
+        "9": 307
+      }
+    }
+  },
+  "olsr-b-j100-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\DoS\\olsr-b-j100-dos.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "100",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 12338,
+      "1": 1172,
+      "3": 37,
+      "4": 42,
+      "5": 75,
+      "6": 125,
+      "7": 56
+    },
+    "relay_path_distribution": {
+      "0->6": 570,
+      "0->5": 431,
+      "0->7": 280,
+      "0->4": 181,
+      "0->1->3": 75,
+      "0->1->6": 29,
+      "0->9": 1,
+      "0->2": 1,
+      "0->3": 1,
+      "0->4->6->5": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 12,
+        "end_s": 26,
+        "duration_s": 15,
+        "lost_packets": 207
+      },
+      {
+        "start_s": 30,
+        "end_s": 34,
+        "duration_s": 5,
+        "lost_packets": 53
+      },
+      {
+        "start_s": 40,
+        "end_s": 40,
+        "duration_s": 1,
+        "lost_packets": 1
+      },
+      {
+        "start_s": 44,
+        "end_s": 64,
+        "duration_s": 21,
+        "lost_packets": 267
+      },
+      {
+        "start_s": 78,
+        "end_s": 84,
+        "duration_s": 7,
+        "lost_packets": 84
+      },
+      {
+        "start_s": 100,
+        "end_s": 120,
+        "duration_s": 21,
+        "lost_packets": 254
+      },
+      {
+        "start_s": 124,
+        "end_s": 124,
+        "duration_s": 1,
+        "lost_packets": 5
+      },
+      {
+        "start_s": 130,
+        "end_s": 138,
+        "duration_s": 9,
+        "lost_packets": 150
+      },
+      {
+        "start_s": 146,
+        "end_s": 160,
+        "duration_s": 15,
+        "lost_packets": 252
+      },
+      {
+        "start_s": 164,
+        "end_s": 172,
+        "duration_s": 9,
+        "lost_packets": 96
+      },
+      {
+        "start_s": 180,
+        "end_s": 192,
+        "duration_s": 13,
+        "lost_packets": 106
+      },
+      {
+        "start_s": 196,
+        "end_s": 210,
+        "duration_s": 15,
+        "lost_packets": 57
+      },
+      {
+        "start_s": 218,
+        "end_s": 238,
+        "duration_s": 21,
+        "lost_packets": 220
+      },
+      {
+        "start_s": 241,
+        "end_s": 241,
+        "duration_s": 1,
+        "lost_packets": 2
+      }
+    ],
+    "olsr_hello_per_node": {
+      "0": 154,
+      "1": 154,
+      "2": 154,
+      "3": 154,
+      "4": 154,
+      "5": 154,
+      "6": 154,
+      "7": 154,
+      "8": 154,
+      "9": 154
+    },
+    "olsr_tc_per_node": {
+      "0": 68,
+      "1": 32,
+      "3": 4,
+      "4": 1,
+      "6": 47,
+      "7": 68
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "olsr-b-j100-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\Normal\\olsr-b-j100-normal.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "100",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 4,
+      "3": 2
+    },
+    "relay_path_distribution": {
+      "0->3": 5885,
+      "0": 1433,
+      "0->9": 6
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {
+      "0": 154,
+      "1": 154,
+      "2": 154,
+      "3": 154,
+      "4": 154,
+      "5": 154,
+      "6": 154,
+      "7": 154,
+      "8": 154,
+      "9": 154
+    },
+    "olsr_tc_per_node": {
+      "7": 49
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "aodv-b-j200-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\DoS\\aodv-b-j200-dos.tr",
+    "Protokol": "AODV",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "200",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 203,
+      "1": 232,
+      "2": 121,
+      "3": 34,
+      "4": 20,
+      "5": 2
+    },
+    "relay_path_distribution": {
+      "0": 1511,
+      "0->2->5": 8,
+      "0->3->4->7": 1,
+      "0->3->4": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 9,
+        "end_s": 114,
+        "duration_s": 106,
+        "lost_packets": 2567
+      },
+      {
+        "start_s": 124,
+        "end_s": 279,
+        "duration_s": 156,
+        "lost_packets": 3765
+      },
+      {
+        "start_s": 288,
+        "end_s": 315,
+        "duration_s": 28,
+        "lost_packets": 619
+      }
+    ],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 43,
+        "1": 37,
+        "2": 15,
+        "3": 16,
+        "4": 11,
+        "5": 10
+      },
+      "RREP": {
+        "1": 17,
+        "2": 19,
+        "3": 21,
+        "4": 11,
+        "5": 6,
+        "6": 8,
+        "7": 8,
+        "8": 1,
+        "9": 2
+      },
+      "RERR": {
+        "1": 25,
+        "2": 7,
+        "3": 6,
+        "4": 5,
+        "5": 3,
+        "6": 13,
+        "7": 13,
+        "9": 3
+      },
+      "HELLO": {
+        "0": 361,
+        "1": 363,
+        "2": 372,
+        "3": 372,
+        "4": 375,
+        "5": 375,
+        "6": 379,
+        "7": 379,
+        "8": 379,
+        "9": 379
+      }
+    }
+  },
+  "aodv-b-j200-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\Normal\\aodv-b-j200-normal.tr",
+    "Protokol": "AODV",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "200",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 29,
+      "3": 19,
+      "4": 21,
+      "7": 1
+    },
+    "relay_path_distribution": {
+      "0->3->4->7": 5833,
+      "0": 1511,
+      "0->3": 879,
+      "0->3->4": 854
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 3,
+        "1": 2,
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "5": 1
+      },
+      "RREP": {
+        "3": 4,
+        "4": 3,
+        "6": 2,
+        "7": 3
+      },
+      "RERR": {
+        "6": 1,
+        "7": 1
+      },
+      "HELLO": {
+        "0": 377,
+        "1": 378,
+        "2": 378,
+        "3": 379,
+        "4": 379,
+        "5": 379,
+        "6": 379,
+        "7": 379,
+        "8": 379,
+        "9": 379
+      }
+    }
+  },
+  "olsr-b-j200-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\DoS\\olsr-b-j200-dos.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "200",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 2858,
+      "1": 209,
+      "2": 81,
+      "3": 2648,
+      "4": 5037,
+      "5": 5662,
+      "6": 159,
+      "7": 140
+    },
+    "relay_path_distribution": {
+      "0": 676,
+      "0->3->5->7": 473,
+      "0->3->4->6": 405,
+      "0->3->5->6": 189,
+      "0->3->4->7": 155,
+      "0->3->5": 133,
+      "0->3->5->4->6": 75,
+      "0->3->5->4->7": 49,
+      "0->3->4->5->7": 26,
+      "0->2->4": 3,
+      "0->3->4": 2,
+      "0->6": 1,
+      "0->3->7": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 11,
+        "end_s": 65,
+        "duration_s": 55,
+        "lost_packets": 947
+      },
+      {
+        "start_s": 70,
+        "end_s": 115,
+        "duration_s": 46,
+        "lost_packets": 976
+      },
+      {
+        "start_s": 118,
+        "end_s": 125,
+        "duration_s": 8,
+        "lost_packets": 147
+      },
+      {
+        "start_s": 132,
+        "end_s": 160,
+        "duration_s": 29,
+        "lost_packets": 501
+      },
+      {
+        "start_s": 165,
+        "end_s": 166,
+        "duration_s": 2,
+        "lost_packets": 13
+      },
+      {
+        "start_s": 171,
+        "end_s": 195,
+        "duration_s": 25,
+        "lost_packets": 402
+      },
+      {
+        "start_s": 200,
+        "end_s": 215,
+        "duration_s": 16,
+        "lost_packets": 236
+      },
+      {
+        "start_s": 220,
+        "end_s": 245,
+        "duration_s": 26,
+        "lost_packets": 373
+      },
+      {
+        "start_s": 250,
+        "end_s": 318,
+        "duration_s": 69,
+        "lost_packets": 1405
+      }
+    ],
+    "olsr_hello_per_node": {
+      "0": 190,
+      "1": 190,
+      "2": 190,
+      "3": 190,
+      "4": 190,
+      "5": 190,
+      "6": 190,
+      "7": 190,
+      "8": 190,
+      "9": 190
+    },
+    "olsr_tc_per_node": {
+      "0": 13,
+      "1": 2,
+      "2": 16,
+      "3": 187,
+      "4": 75,
+      "5": 130,
+      "6": 23,
+      "7": 74
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "olsr-b-j200-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\Normal\\olsr-b-j200-normal.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "200",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 14,
+      "3": 9,
+      "5": 13
+    },
+    "relay_path_distribution": {
+      "0->3->5->6": 5739,
+      "0": 1437,
+      "0->3": 877,
+      "0->3->5": 873,
+      "0->3->5->9": 6,
+      "0->3->4": 2,
+      "0->2": 1
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {
+      "0": 190,
+      "1": 190,
+      "2": 190,
+      "3": 190,
+      "4": 190,
+      "5": 190,
+      "6": 190,
+      "7": 190,
+      "8": 190,
+      "9": 190
+    },
+    "olsr_tc_per_node": {
+      "2": 8,
+      "3": 173,
+      "4": 8,
+      "5": 157,
+      "7": 145
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "aodv-b-j300-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\DoS\\aodv-b-j300-dos.tr",
+    "Protokol": "AODV",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "300",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 787,
+      "1": 112,
+      "2": 104,
+      "3": 95,
+      "4": 20,
+      "5": 2
+    },
+    "relay_path_distribution": {
+      "0": 1511,
+      "0->2->5": 7,
+      "0->3->4": 6,
+      "0->3->4->7": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 9,
+        "end_s": 114,
+        "duration_s": 106,
+        "lost_packets": 2567
+      },
+      {
+        "start_s": 124,
+        "end_s": 279,
+        "duration_s": 156,
+        "lost_packets": 3775
+      },
+      {
+        "start_s": 289,
+        "end_s": 337,
+        "duration_s": 49,
+        "lost_packets": 1148
+      },
+      {
+        "start_s": 346,
+        "end_s": 351,
+        "duration_s": 6,
+        "lost_packets": 118
+      },
+      {
+        "start_s": 362,
+        "end_s": 387,
+        "duration_s": 26,
+        "lost_packets": 632
+      }
+    ],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 69,
+        "1": 56,
+        "2": 22,
+        "3": 23,
+        "4": 10,
+        "5": 10
+      },
+      "RREP": {
+        "0": 2,
+        "1": 21,
+        "2": 27,
+        "3": 25,
+        "4": 11,
+        "5": 7,
+        "6": 4,
+        "7": 4
+      },
+      "RERR": {
+        "0": 3,
+        "1": 9,
+        "2": 9,
+        "3": 12,
+        "4": 5,
+        "5": 1,
+        "6": 7,
+        "7": 7
+      },
+      "HELLO": {
+        "0": 425,
+        "1": 426,
+        "2": 440,
+        "3": 440,
+        "4": 447,
+        "5": 447,
+        "6": 451,
+        "7": 451,
+        "8": 451,
+        "9": 451
+      }
+    }
+  },
+  "aodv-b-j300-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\Normal\\aodv-b-j300-normal.tr",
+    "Protokol": "AODV",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "300",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 40,
+      "3": 23,
+      "4": 22,
+      "7": 1
+    },
+    "relay_path_distribution": {
+      "0->3->4->7": 6687,
+      "0": 1511,
+      "0->3->4": 1319,
+      "0->3": 1318
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 3,
+        "1": 2,
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "5": 1
+      },
+      "RREP": {
+        "3": 4,
+        "4": 3,
+        "6": 2,
+        "7": 3
+      },
+      "RERR": {
+        "6": 1,
+        "7": 1
+      },
+      "HELLO": {
+        "0": 449,
+        "1": 450,
+        "2": 450,
+        "3": 451,
+        "4": 451,
+        "5": 451,
+        "6": 451,
+        "7": 451,
+        "8": 451,
+        "9": 451
+      }
+    }
+  },
+  "olsr-b-j300-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\DoS\\olsr-b-j300-dos.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "300",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 5032,
+      "1": 2,
+      "2": 2607,
+      "3": 4184,
+      "4": 9157,
+      "5": 5820,
+      "6": 121,
+      "7": 177
+    },
+    "relay_path_distribution": {
+      "0": 1478,
+      "0->3->4->6": 960,
+      "0->3->5->7": 543,
+      "0->2": 383,
+      "0->3->4": 294,
+      "0->3->4->7": 271,
+      "0->2->5": 123,
+      "0->2->4": 76,
+      "0->3->5->4->6": 62,
+      "0->3->5->4->7": 49,
+      "0->1": 26,
+      "0->3->4->5->7": 25,
+      "0->3->5": 22,
+      "0->3->2->4": 18,
+      "0->9": 3,
+      "0->5": 3,
+      "0->2->6": 3,
+      "0->2->9": 1,
+      "0->7": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 11,
+        "end_s": 108,
+        "duration_s": 98,
+        "lost_packets": 1734
+      },
+      {
+        "start_s": 116,
+        "end_s": 120,
+        "duration_s": 5,
+        "lost_packets": 88
+      },
+      {
+        "start_s": 124,
+        "end_s": 124,
+        "duration_s": 1,
+        "lost_packets": 1
+      },
+      {
+        "start_s": 128,
+        "end_s": 165,
+        "duration_s": 38,
+        "lost_packets": 707
+      },
+      {
+        "start_s": 170,
+        "end_s": 387,
+        "duration_s": 218,
+        "lost_packets": 3705
+      }
+    ],
+    "olsr_hello_per_node": {
+      "0": 226,
+      "1": 226,
+      "2": 226,
+      "3": 226,
+      "4": 226,
+      "5": 226,
+      "6": 226,
+      "7": 226,
+      "8": 226,
+      "9": 226
+    },
+    "olsr_tc_per_node": {
+      "0": 4,
+      "1": 11,
+      "2": 27,
+      "3": 232,
+      "4": 112,
+      "5": 171,
+      "6": 38,
+      "7": 86
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "olsr-b-j300-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\Normal\\olsr-b-j300-normal.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "300",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 20,
+      "3": 11,
+      "5": 16,
+      "6": 1
+    },
+    "relay_path_distribution": {
+      "0->3->5->6": 6620,
+      "0": 1432,
+      "0->3": 1304,
+      "0->3->4": 1271,
+      "0->3->5": 48,
+      "0->2": 7,
+      "0->3->6": 4,
+      "0->3->9": 2,
+      "0->4": 2,
+      "0->7": 1,
+      "0->9": 1,
+      "0->6": 1
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {
+      "0": 226,
+      "1": 226,
+      "2": 226,
+      "3": 226,
+      "4": 226,
+      "5": 226,
+      "6": 226,
+      "7": 226,
+      "8": 226,
+      "9": 226
+    },
+    "olsr_tc_per_node": {
+      "2": 12,
+      "3": 210,
+      "4": 12,
+      "5": 184,
+      "7": 164
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "aodv-b-j400-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\DoS\\aodv-b-j400-dos.tr",
+    "Protokol": "AODV",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "400",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 11
+    },
+    "relay_path_distribution": {
+      "0": 1575
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 264,
+        "1": 220
+      },
+      "HELLO": {
+        "0": 377,
+        "1": 378,
+        "2": 523,
+        "3": 523,
+        "4": 523,
+        "5": 523,
+        "6": 523,
+        "7": 523,
+        "8": 523,
+        "9": 523
+      }
+    }
+  },
+  "aodv-b-j400-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\Normal\\aodv-b-j400-normal.tr",
+    "Protokol": "AODV",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "400",
+    "Seed": 1,
+    "retry_per_node": {},
+    "relay_path_distribution": {
+      "0": 1575
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 264,
+        "1": 220
+      },
+      "HELLO": {
+        "0": 377,
+        "1": 378,
+        "2": 523,
+        "3": 523,
+        "4": 523,
+        "5": 523,
+        "6": 523,
+        "7": 523,
+        "8": 523,
+        "9": 523
+      }
+    }
+  },
+  "olsr-b-j400-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\DoS\\olsr-b-j400-dos.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "400",
+    "Seed": 1,
+    "retry_per_node": {
+      "7": 1
+    },
+    "relay_path_distribution": {
+      "0->7": 42,
+      "0->3": 3,
+      "0->2": 3,
+      "0->5": 2,
+      "0->9": 1
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {
+      "0": 262,
+      "1": 262,
+      "2": 262,
+      "3": 262,
+      "4": 262,
+      "5": 262,
+      "6": 262,
+      "7": 262,
+      "8": 262,
+      "9": 262
+    },
+    "olsr_tc_per_node": {
+      "3": 2
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "olsr-b-j400-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\Normal\\olsr-b-j400-normal.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "B",
+    "Nilai_Variabel": "400",
+    "Seed": 1,
+    "retry_per_node": {},
+    "relay_path_distribution": {},
+    "loss_windows": [],
+    "olsr_hello_per_node": {
+      "0": 262,
+      "1": 262,
+      "2": 262,
+      "3": 262,
+      "4": 262,
+      "5": 262,
+      "6": 262,
+      "7": 262,
+      "8": 262,
+      "9": 262
+    },
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {}
+  },
+  "aodv-c-k30-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\DoS\\aodv-c-k30-dos.tr",
+    "Protokol": "AODV",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "C",
+    "Nilai_Variabel": "30",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 720,
+      "1": 787,
+      "2": 139,
+      "3": 16,
+      "4": 20
+    },
+    "relay_path_distribution": {
+      "0": 681,
+      "0->1->3": 55,
+      "0->3": 30,
+      "0->2->5": 1,
+      "0->3->4->7": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 9,
+        "end_s": 114,
+        "duration_s": 106,
+        "lost_packets": 2567
+      },
+      {
+        "start_s": 124,
+        "end_s": 175,
+        "duration_s": 52,
+        "lost_packets": 1237
+      },
+      {
+        "start_s": 179,
+        "end_s": 179,
+        "duration_s": 1,
+        "lost_packets": 80
+      },
+      {
+        "start_s": 200,
+        "end_s": 214,
+        "duration_s": 15,
+        "lost_packets": 270
+      },
+      {
+        "start_s": 218,
+        "end_s": 224,
+        "duration_s": 7,
+        "lost_packets": 196
+      }
+    ],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 92,
+        "1": 79,
+        "2": 28,
+        "3": 26,
+        "4": 10,
+        "5": 10
+      },
+      "RREP": {
+        "0": 2,
+        "1": 42,
+        "2": 40,
+        "3": 70,
+        "4": 14,
+        "5": 16,
+        "6": 12,
+        "7": 12,
+        "8": 4,
+        "9": 4
+      },
+      "RERR": {
+        "0": 1,
+        "1": 90,
+        "2": 21,
+        "3": 9,
+        "4": 7,
+        "5": 6,
+        "6": 14,
+        "7": 14,
+        "8": 3,
+        "9": 3
+      },
+      "HELLO": {
+        "0": 218,
+        "1": 220,
+        "2": 240,
+        "3": 240,
+        "4": 250,
+        "5": 250,
+        "6": 254,
+        "7": 254,
+        "8": 254,
+        "9": 254
+      }
+    }
+  },
+  "aodv-c-k30-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\Normal\\aodv-c-k30-normal.tr",
+    "Protokol": "AODV",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "C",
+    "Nilai_Variabel": "30",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 22,
+      "3": 15,
+      "4": 10,
+      "7": 1
+    },
+    "relay_path_distribution": {
+      "0->3->4->7": 4148,
+      "0": 706,
+      "0->3": 586,
+      "0->3->4": 586
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 3,
+        "1": 2,
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "5": 1
+      },
+      "RREP": {
+        "3": 4,
+        "4": 3,
+        "6": 2,
+        "7": 3
+      },
+      "RERR": {
+        "3": 1,
+        "6": 1,
+        "7": 4
+      },
+      "HELLO": {
+        "0": 252,
+        "1": 253,
+        "2": 253,
+        "3": 254,
+        "4": 254,
+        "5": 254,
+        "6": 254,
+        "7": 254,
+        "8": 254,
+        "9": 254
+      }
+    }
+  },
+  "olsr-c-k30-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\DoS\\olsr-c-k30-dos.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "C",
+    "Nilai_Variabel": "30",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 660,
+      "1": 37,
+      "2": 926,
+      "3": 1800,
+      "4": 1785,
+      "5": 2780,
+      "6": 112,
+      "7": 90
+    },
+    "relay_path_distribution": {
+      "0": 542,
+      "0->3->5->7": 313,
+      "0->3->4->6": 267,
+      "0->1->2": 189,
+      "0->3->5->6": 127,
+      "0->3->4->7": 92,
+      "0->3->5->4->6": 51,
+      "0->2": 50,
+      "0->3->5->4->7": 49,
+      "0->3->9": 6,
+      "0->7": 5,
+      "0->9": 2,
+      "0->3->7": 2,
+      "0->3->6": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 11,
+        "end_s": 65,
+        "duration_s": 55,
+        "lost_packets": 947
+      },
+      {
+        "start_s": 70,
+        "end_s": 115,
+        "duration_s": 46,
+        "lost_packets": 976
+      },
+      {
+        "start_s": 118,
+        "end_s": 125,
+        "duration_s": 8,
+        "lost_packets": 147
+      },
+      {
+        "start_s": 132,
+        "end_s": 160,
+        "duration_s": 29,
+        "lost_packets": 501
+      },
+      {
+        "start_s": 165,
+        "end_s": 166,
+        "duration_s": 2,
+        "lost_packets": 13
+      },
+      {
+        "start_s": 171,
+        "end_s": 208,
+        "duration_s": 38,
+        "lost_packets": 787
+      },
+      {
+        "start_s": 212,
+        "end_s": 226,
+        "duration_s": 15,
+        "lost_packets": 195
+      }
+    ],
+    "olsr_hello_per_node": {
+      "0": 127,
+      "1": 127,
+      "2": 127,
+      "3": 127,
+      "4": 127,
+      "5": 127,
+      "6": 127,
+      "7": 127,
+      "8": 127,
+      "9": 127
+    },
+    "olsr_tc_per_node": {
+      "0": 5,
+      "1": 10,
+      "2": 19,
+      "3": 136,
+      "4": 48,
+      "5": 96,
+      "6": 17,
+      "7": 56
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "olsr-c-k30-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\Normal\\olsr-c-k30-normal.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "C",
+    "Nilai_Variabel": "30",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 12,
+      "3": 10,
+      "5": 6
+    },
+    "relay_path_distribution": {
+      "0->3->5->6": 4085,
+      "0": 626,
+      "0->3->5": 577,
+      "0->2": 529,
+      "0->3": 47,
+      "0->3->9": 6,
+      "0->3->6": 5,
+      "0->9": 4,
+      "0->6": 2,
+      "0->3->4": 1,
+      "0->7": 1,
+      "0->4": 1
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {
+      "0": 127,
+      "1": 127,
+      "2": 127,
+      "3": 127,
+      "4": 127,
+      "5": 127,
+      "6": 127,
+      "7": 127,
+      "8": 127,
+      "9": 127
+    },
+    "olsr_tc_per_node": {
+      "3": 121,
+      "4": 5,
+      "5": 112,
+      "7": 104
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "aodv-c-k40-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\DoS\\aodv-c-k40-dos.tr",
+    "Protokol": "AODV",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "C",
+    "Nilai_Variabel": "40",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 525,
+      "2": 444,
+      "3": 91,
+      "4": 20,
+      "5": 2
+    },
+    "relay_path_distribution": {
+      "0": 511,
+      "0->2->5": 18,
+      "0->3->4->7": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 9,
+        "end_s": 114,
+        "duration_s": 106,
+        "lost_packets": 2567
+      },
+      {
+        "start_s": 124,
+        "end_s": 139,
+        "duration_s": 16,
+        "lost_packets": 338
+      },
+      {
+        "start_s": 149,
+        "end_s": 149,
+        "duration_s": 1,
+        "lost_packets": 12
+      },
+      {
+        "start_s": 153,
+        "end_s": 168,
+        "duration_s": 16,
+        "lost_packets": 393
+      }
+    ],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 50,
+        "1": 44,
+        "2": 33,
+        "3": 33,
+        "4": 9,
+        "5": 10
+      },
+      "RREP": {
+        "1": 5,
+        "2": 25,
+        "3": 19,
+        "4": 15,
+        "5": 23,
+        "6": 4,
+        "7": 4
+      },
+      "RERR": {
+        "2": 41,
+        "3": 11,
+        "4": 2,
+        "5": 2,
+        "6": 6,
+        "7": 6
+      },
+      "HELLO": {
+        "0": 170,
+        "1": 171,
+        "2": 177,
+        "3": 176,
+        "4": 187,
+        "5": 187,
+        "6": 191,
+        "7": 191,
+        "8": 191,
+        "9": 191
+      }
+    }
+  },
+  "aodv-c-k40-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\Normal\\aodv-c-k40-normal.tr",
+    "Protokol": "AODV",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "C",
+    "Nilai_Variabel": "40",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 17,
+      "3": 7,
+      "4": 5,
+      "7": 1
+    },
+    "relay_path_distribution": {
+      "0->3->4->7": 3099,
+      "0": 511,
+      "0->3": 439,
+      "0->3->4": 439
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 3,
+        "1": 2,
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "5": 1
+      },
+      "RREP": {
+        "3": 4,
+        "4": 3,
+        "6": 2,
+        "7": 3
+      },
+      "RERR": {
+        "3": 1,
+        "7": 1
+      },
+      "HELLO": {
+        "0": 189,
+        "1": 190,
+        "2": 190,
+        "3": 191,
+        "4": 191,
+        "5": 191,
+        "6": 191,
+        "7": 191,
+        "8": 191,
+        "9": 191
+      }
+    }
+  },
+  "olsr-c-k40-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\DoS\\olsr-c-k40-dos.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "C",
+    "Nilai_Variabel": "40",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 2158,
+      "1": 1,
+      "2": 594,
+      "3": 1058,
+      "4": 518,
+      "5": 2310,
+      "6": 25,
+      "7": 74
+    },
+    "relay_path_distribution": {
+      "0->3->5->7": 313,
+      "0->3->4->6": 136,
+      "0->3->5->6": 83,
+      "0->3->5": 65,
+      "0->3->5->4->6": 51,
+      "0->3": 50,
+      "0->3->5->4->7": 49,
+      "0->3->4->7": 22,
+      "0->3->2->5": 19,
+      "0->2->4": 14,
+      "0->2->3->5": 13,
+      "0->3->4->9": 3,
+      "0->2->5": 3,
+      "0->7": 2,
+      "0->6": 2,
+      "0->3->6": 1,
+      "0->9": 1,
+      "0->5": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 11,
+        "end_s": 65,
+        "duration_s": 55,
+        "lost_packets": 947
+      },
+      {
+        "start_s": 70,
+        "end_s": 115,
+        "duration_s": 46,
+        "lost_packets": 976
+      },
+      {
+        "start_s": 118,
+        "end_s": 125,
+        "duration_s": 8,
+        "lost_packets": 147
+      },
+      {
+        "start_s": 131,
+        "end_s": 167,
+        "duration_s": 37,
+        "lost_packets": 738
+      },
+      {
+        "start_s": 170,
+        "end_s": 170,
+        "duration_s": 1,
+        "lost_packets": 2
+      }
+    ],
+    "olsr_hello_per_node": {
+      "0": 96,
+      "1": 96,
+      "2": 96,
+      "3": 96,
+      "4": 96,
+      "5": 96,
+      "6": 96,
+      "7": 96,
+      "8": 96,
+      "9": 96
+    },
+    "olsr_tc_per_node": {
+      "0": 4,
+      "1": 3,
+      "2": 11,
+      "3": 102,
+      "4": 36,
+      "5": 78,
+      "6": 12,
+      "7": 43
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "olsr-c-k40-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\Normal\\olsr-c-k40-normal.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "C",
+    "Nilai_Variabel": "40",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 11,
+      "3": 6,
+      "5": 4,
+      "9": 1
+    },
+    "relay_path_distribution": {
+      "0->3->5->6": 3004,
+      "0": 407,
+      "0->2": 385,
+      "0->3->4": 385,
+      "0->3->5": 53,
+      "0->6": 48,
+      "0->3": 45,
+      "0->3->7": 6,
+      "0->7": 5,
+      "0->3->5->9": 4,
+      "0->9": 2,
+      "0->3->6": 1,
+      "0->4": 1
+    },
+    "loss_windows": [],
+    "olsr_hello_per_node": {
+      "0": 96,
+      "1": 96,
+      "2": 96,
+      "3": 96,
+      "4": 96,
+      "5": 96,
+      "6": 96,
+      "7": 96,
+      "8": 96,
+      "9": 96
+    },
+    "olsr_tc_per_node": {
+      "2": 5,
+      "3": 91,
+      "4": 4,
+      "5": 88,
+      "7": 79
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "aodv-d-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\DoS\\aodv-d-dos.tr",
+    "Protokol": "AODV",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "D",
+    "Nilai_Variabel": "15-25 km/jam",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 30,
+      "2": 12,
+      "3": 13
+    },
+    "relay_path_distribution": {
+      "0": 4465
+    },
+    "loss_windows": [
+      {
+        "start_s": 9,
+        "end_s": 45,
+        "duration_s": 37,
+        "lost_packets": 881
+      }
+    ],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 135,
+        "1": 57,
+        "2": 113,
+        "3": 114,
+        "4": 8,
+        "5": 7,
+        "7": 3,
+        "9": 2
+      },
+      "RREP": {
+        "2": 6,
+        "3": 5,
+        "4": 4,
+        "5": 11,
+        "6": 2,
+        "7": 8,
+        "9": 1
+      },
+      "RERR": {
+        "2": 2,
+        "3": 2,
+        "4": 1,
+        "5": 7,
+        "6": 4,
+        "7": 9,
+        "9": 1
+      },
+      "HELLO": {
+        "0": 423,
+        "1": 461,
+        "2": 424,
+        "3": 424,
+        "4": 493,
+        "5": 494,
+        "6": 497,
+        "7": 496,
+        "8": 497,
+        "9": 496
+      }
+    }
+  },
+  "aodv-d-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\AODV\\Normal\\aodv-d-normal.tr",
+    "Protokol": "AODV",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "D",
+    "Nilai_Variabel": "15-25 km/jam",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 27,
+      "2": 14,
+      "3": 7,
+      "4": 1,
+      "5": 1,
+      "7": 11
+    },
+    "relay_path_distribution": {
+      "0": 4465,
+      "0->7->5": 1104,
+      "0->3->4->7": 755,
+      "0->7": 684,
+      "0->2->5->6": 101,
+      "0->2->4->7": 94
+    },
+    "loss_windows": [
+      {
+        "start_s": 36,
+        "end_s": 36,
+        "duration_s": 1,
+        "lost_packets": 1
+      },
+      {
+        "start_s": 40,
+        "end_s": 41,
+        "duration_s": 2,
+        "lost_packets": 39
+      },
+      {
+        "start_s": 45,
+        "end_s": 45,
+        "duration_s": 1,
+        "lost_packets": 1
+      },
+      {
+        "start_s": 275,
+        "end_s": 284,
+        "duration_s": 10,
+        "lost_packets": 205
+      }
+    ],
+    "olsr_hello_per_node": {},
+    "olsr_tc_per_node": {},
+    "aodv_msgs_per_node": {
+      "RREQ": {
+        "0": 117,
+        "1": 54,
+        "2": 97,
+        "3": 97,
+        "4": 2,
+        "5": 3,
+        "7": 2
+      },
+      "RREP": {
+        "2": 5,
+        "3": 4,
+        "4": 9,
+        "5": 6,
+        "6": 4,
+        "7": 15,
+        "9": 2
+      },
+      "RERR": {
+        "2": 2,
+        "3": 1,
+        "4": 2,
+        "5": 2,
+        "6": 1,
+        "7": 2,
+        "9": 1
+      },
+      "HELLO": {
+        "0": 433,
+        "1": 462,
+        "2": 435,
+        "3": 434,
+        "4": 497,
+        "5": 496,
+        "6": 497,
+        "7": 497,
+        "8": 497,
+        "9": 497
+      }
+    }
+  },
+  "olsr-d-dos.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\DoS\\olsr-d-dos.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "DoS",
+    "Kelompok_OFAT": "D",
+    "Nilai_Variabel": "15-25 km/jam",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 4547,
+      "2": 1173,
+      "3": 792,
+      "4": 255,
+      "5": 1097,
+      "6": 10,
+      "7": 138
+    },
+    "relay_path_distribution": {
+      "0": 4342,
+      "0->7": 201,
+      "0->3->5->7": 199,
+      "0->7->4": 161,
+      "0->2->7": 89,
+      "0->3->4->6": 75,
+      "0->3->5->4->6": 51,
+      "0->7->5": 50,
+      "0->7->9": 17,
+      "0->3->5->4->7": 10,
+      "0->3->4->7": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 11,
+        "end_s": 52,
+        "duration_s": 42,
+        "lost_packets": 666
+      },
+      {
+        "start_s": 246,
+        "end_s": 274,
+        "duration_s": 29,
+        "lost_packets": 369
+      },
+      {
+        "start_s": 280,
+        "end_s": 282,
+        "duration_s": 3,
+        "lost_packets": 38
+      },
+      {
+        "start_s": 285,
+        "end_s": 300,
+        "duration_s": 16,
+        "lost_packets": 180
+      },
+      {
+        "start_s": 306,
+        "end_s": 314,
+        "duration_s": 9,
+        "lost_packets": 116
+      }
+    ],
+    "olsr_hello_per_node": {
+      "0": 249,
+      "1": 249,
+      "2": 249,
+      "3": 249,
+      "4": 249,
+      "5": 249,
+      "6": 249,
+      "7": 249,
+      "8": 249,
+      "9": 249
+    },
+    "olsr_tc_per_node": {
+      "0": 65,
+      "2": 22,
+      "3": 37,
+      "4": 35,
+      "5": 57,
+      "6": 32,
+      "7": 73,
+      "8": 28,
+      "9": 55
+    },
+    "aodv_msgs_per_node": {}
+  },
+  "olsr-d-normal.tr": {
+    "Path": "C:\\Perkuliahan\\PBL\\hasil_Simulasi\\OLSR\\Normal\\olsr-d-normal.tr",
+    "Protokol": "OLSR",
+    "Kondisi": "Normal",
+    "Kelompok_OFAT": "D",
+    "Nilai_Variabel": "15-25 km/jam",
+    "Seed": 1,
+    "retry_per_node": {
+      "0": 3,
+      "3": 793,
+      "5": 1,
+      "7": 1
+    },
+    "relay_path_distribution": {
+      "0": 4342,
+      "0->3->5->6": 722,
+      "0->7->4": 702,
+      "0->7": 681,
+      "0->7->5": 292,
+      "0->7->9": 47,
+      "0->7->6": 1
+    },
+    "loss_windows": [
+      {
+        "start_s": 40,
+        "end_s": 52,
+        "duration_s": 13,
+        "lost_packets": 280
+      }
+    ],
+    "olsr_hello_per_node": {
+      "0": 249,
+      "1": 249,
+      "2": 249,
+      "3": 249,
+      "4": 249,
+      "5": 249,
+      "6": 249,
+      "7": 249,
+      "8": 249,
+      "9": 249
+    },
+    "olsr_tc_per_node": {
+      "0": 77,
+      "2": 4,
+      "3": 26,
+      "4": 8,
+      "5": 51,
+      "6": 22,
+      "7": 100,
+      "8": 28,
+      "9": 65
+    },
+    "aodv_msgs_per_node": {}
+  }
+}
