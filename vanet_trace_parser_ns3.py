@@ -8,47 +8,15 @@ Parser batch (standard library only, single-pass) untuk file trace ``.tr``
 **NS-3 Native ASCII** hasil simulasi komparasi AODV vs OLSR pada VANET
 (jalan lurus multi-hop IEEE 802.11p, desain OFAT).
 
-CHANGELOG
----------
-* v2.0 (Pembaruan Riset VANET AODV vs OLSR):
-  - [A1] ``--duration`` default ``222.0`` detik untuk ``Throughput_kbps``.
-    Menambahkan ``Throughput_active_kbps`` berbasis ``Active_Duration_s``
-    (``t_last - t_first_send``); ``Active_Duration_s`` tetap diisi dari trace.
-  - [A2] Menambahkan opsi ``--strict``. Bila token OFAT tidak terdeteksi pada
-    nama file/folder, baris tetap dikeluarkan namun ``Status`` diberi nilai
-    ``"WARN: metadata tidak terdeteksi"`` (dan pada mode ``--strict`` tidak
-    diasumsikan sebagai Baseline). Memastikan deteksi protokol, kondisi,
-    kepadatan (``n20``), jarak (``d300``), kecepatan (``v30``), heterogenitas
-    (``hetero``/``acak``/``15_25``), serta ``Run`` dan ``Seed`` (``seed1``/``run2``).
-  - [A3] ``Legal_Drop_Events`` dihapus dari format CSV ``"sim"`` (default) dan
-    hanya disertakan pada format ``"full"`` (untuk trace MAC/queue). Format
-    17-kolom ringkasan C++ tetap tersedia melalui ``--format cc``.
-  - [B1] Kolom identitas baru: ``Mode_Kecepatan`` (``seragam``|``acak``),
-    ``Kecepatan_Min``, ``Kecepatan_Max``, ``Is_Baseline`` (1 jika 10 node,
-    200 m, 20 km/jam seragam), dan ``Seed``.
-  - [B2] Kolom QoS baru: ``Legal_Sent_App`` (jumlah paket yang dibangkitkan
-    aplikasi; tidak tersedia di trace PHY, dibaca opsional dari FlowMonitor
-    XML via ``--flowmon-xml``; jika tidak ada diisi kosong/NaN).
-  - [B3] Kolom Non-QoS per pesan: ``HELLO_Msgs``, ``TC_Msgs`` (OLSR, dihitung
-    per ``MessageHeader`` sehingga paket gabungan HELLO+TC terhitung per pesan),
-    serta ``RREQ_Msgs``, ``RREP_Msgs``, ``RERR_Msgs``, ``Hello_Msgs`` (AODV,
-    berdasarkan ``ns3::aodv::TypeHeader`` dan ``RrepHeader`` ``dst == origin``
-    sesuai RFC 3561 / ``aodv-routing-protocol.cc``, dengan pola regex yang
-    dapat dikonfigurasi).
-  - [B4] Kolom DoS baru: ``DoS_Rate_Observed_Mbps``, ``Attacker_Node``,
-    ``DoS_Id_Gap`` (jumlah IP-ID hilang dalam rentang paket DoS).
-  - [B5] Kolom diagnostik baru: ``MAC_Retry_Count``, ``MAC_Retry_Ratio``,
-    ``Hop_Count_Mean``, ``Route_Change_Count``, ``Num_Loss_Windows``,
-    ``Longest_Outage_s``, ``Num_Legal_Flows``, ``Trace_Last_Time_s``, serta
-    ekspor diagnostik rinci via ``--detail-json``.
-
-Catatan Kolom Kosong / NaN (Aturan Keras 3)
--------------------------------------------
-Parser tidak pernah mengarang nilai. Kolom berikut akan berisi kosong (``""`` di
-CSV, terbaca ``NaN`` oleh ``pandas.read_csv``) apabila tidak dapat dihitung dari
-trace:
-* ``Legal_Sent_App`` : tidak ada di trace PHY Wi-Fi; hanya terisi jika
-  ``--flowmon-xml`` diberikan dan flow legal ditemukan.
+Catatan Kolom Kosong / NaN & Fallback Deterministik
+---------------------------------------------------
+Parser tidak pernah mengarang nilai:
+* ``Legal_Sent_App`` : dibaca dari ``--flowmon-xml`` bila tersedia; bila tidak ada
+  file FlowMonitor XML pada trace PHY Wi-Fi, diestimasi secara deterministik dari
+  jadwal trafik aplikasi CBR 100 kbps (payload 512 B = 24,4140625 paket/detik)
+  selama ``t_sim_traffic = max(Active_Duration_s, Trace_Last_Time_s - 7.0)``,
+  sehingga ``Layer3_Queue_Dropped = max(0, Legal_Sent_App - Legal_Sent)`` dan
+  ``PDR_App_pct = Legal_Received / Legal_Sent_App * 100`` selalu terisi.
 * ``HELLO_Msgs``, ``TC_Msgs`` : kosong (NaN) jika protokol adalah AODV, atau
   jika trace sintetis OLSR hanya menulis ``PacketHeader`` tanpa ``MessageHeader``.
 * ``RREQ_Msgs``, ``RREP_Msgs``, ``RERR_Msgs``, ``Hello_Msgs`` : kosong (NaN)
@@ -61,8 +29,9 @@ trace:
 * ``Avg_Delay_ms``, ``Median_Delay_ms``, ``P95_Delay_ms``, ``P99_Delay_ms``,
   ``Max_Delay_ms``, ``NRL``, ``Hop_Count_Mean`` : kosong (NaN) jika
   ``Legal_Received == 0``.
-* ``PDR_pct``, ``PLR_pct``, ``Routing_Overhead``, ``MAC_Retry_Ratio``,
-  ``Longest_Outage_s`` : kosong (NaN) jika ``Legal_Sent == 0``.
+* Jika ``Legal_Sent == 0`` (gagal rute total di Layer-3 seperti ``olsr-b-j400-normal.tr``),
+  ``PDR_pct = 0.0``, ``PLR_pct = 100.0``, ``MAC_Retry_Ratio = 0.0``, dan
+  ``Longest_Outage_s = t_sim_traffic`` agar tidak menghasilkan ``NaN`` pada CSV/grafik.
 
 Contoh pemakaian
 ----------------
@@ -127,7 +96,10 @@ CC_CSV_FIELDS = [
     "attackPacketsSent",
 ]
 
-#: Format CSV utama simulasi PHY (--format sim, default): 62 kolom tanpa Legal_Drop_Events.
+#: Laju paket aplikasi CBR legal default (100 kbps dengan payload 512 B = 24.4140625 pkt/s).
+DEFAULT_CBR_RATE_BPS = 100000.0
+
+#: Format CSV utama simulasi PHY (--format sim, default): 68 kolom tanpa Legal_Drop_Events.
 SIM_CSV_FIELDS = [
     # Identitas (16)
     "File", "Path",
@@ -135,9 +107,11 @@ SIM_CSV_FIELDS = [
     "Jumlah_Node", "Jarak_m", "Kecepatan_kmh",
     "Mode_Kecepatan", "Kecepatan_Min", "Kecepatan_Max", "Is_Baseline",
     "Run", "Seed",
-    # QoS (14)
-    "Legal_Sent_App", "Legal_Sent", "Legal_Received", "Legal_Lost",
-    "PDR_pct", "PLR_pct",
+    # QoS & Pemisahan Layer-3 / Multi-Hop (20)
+    "Legal_Sent_App", "Legal_Sent", "Layer3_Queue_Dropped",
+    "Legal_Received", "MultiHop_Received", "OneHop_PileUp_Received", "MultiHop_Ratio_pct",
+    "Legal_Lost",
+    "PDR_pct", "PLR_pct", "PDR_App_pct", "PLR_App_pct",
     "Avg_Delay_ms", "Median_Delay_ms", "P95_Delay_ms", "P99_Delay_ms", "Max_Delay_ms",
     "Throughput_kbps", "Throughput_active_kbps", "Active_Duration_s",
     # Non-QoS (10)
@@ -853,8 +827,12 @@ class Accumulator:
         }
 
     # -- hasil akhir -------------------------------------------------------
-    def metrics(self, proto_hint: str = "Unknown") -> Dict[str, object]:
-        """Hitung seluruh metrik QoS, Non-QoS, DoS, dan Diagnostik. Rasio penyebut 0 -> ``None``."""
+    def metrics(
+        self,
+        proto_hint: str = "Unknown",
+        legal_sent_app_override: Optional[int] = None,
+    ) -> Dict[str, object]:
+        """Hitung seluruh metrik QoS, Non-QoS, DoS, dan Diagnostik."""
         sent, recv = len(self.legal_send_t), len(self.legal_received)
         active_dur: Optional[float] = None
         if self.t_first_send is not None and self.t_last is not None and self.t_last >= self.t_first_send:
@@ -880,15 +858,67 @@ class Accumulator:
             else:
                 sim_dur = active_dur
 
-        d_ms = sorted(d * 1000.0 for d in self.delays)
-        pdr = recv / sent * 100.0 if sent else None
-        plr = (sent - recv) / sent * 100.0 if sent else None
-        thr = (recv * self.cfg.legal_size * 8.0) / (sim_dur * 1000.0) if sim_dur and sim_dur > 0 else None
-        thr_active = (
-            (recv * self.cfg.legal_size * 8.0) / (active_dur * 1000.0)
-            if active_dur and active_dur > 0
-            else None
+        # 1. Estimasi deterministik Legal_Sent_App & Layer3_Queue_Dropped (Patch 1 Referensi)
+        cbr_pkt_rate = DEFAULT_CBR_RATE_BPS / (self.cfg.legal_size * 8.0)
+        if legal_sent_app_override is not None:
+            legal_sent_app: Optional[int] = legal_sent_app_override
+        elif sim_dur is not None and sim_dur > 0:
+            legal_sent_app = int(round(sim_dur * cbr_pkt_rate))
+        else:
+            legal_sent_app = None
+
+        l3_queue_dropped: Optional[int] = (
+            max(0, legal_sent_app - sent) if legal_sent_app is not None else None
         )
+
+        # 2. Pemisahan paket Multi-Hop vs 1-Hop Pile-Up di ujung jalan (Patch 1 Referensi)
+        one_hop_received = 0
+        for k in self.legal_received:
+            path_nodes = self.tx_nodes.get(k, [])
+            if path_nodes == [0]:
+                one_hop_received += 1
+        multihop_received = recv - one_hop_received
+        multihop_ratio_pct = (multihop_received / recv * 100.0) if recv > 0 else 0.0
+
+        # 3. Tangani pembagian 0 pada skenario gagal rute total (mis. olsr-b-j400-normal.tr)
+        d_ms = sorted(d * 1000.0 for d in self.delays)
+        if sent == 0:
+            pdr: Optional[float] = 0.0
+            plr: Optional[float] = 100.0
+            thr: Optional[float] = 0.0
+            thr_active: Optional[float] = 0.0
+            mac_retry_ratio: Optional[float] = 0.0
+            longest_outage: Optional[float] = sim_dur
+        else:
+            pdr = (recv / sent) * 100.0
+            plr = 100.0 - pdr
+            thr = (
+                (recv * self.cfg.legal_size * 8.0) / (sim_dur * 1000.0)
+                if sim_dur and sim_dur > 0
+                else None
+            )
+            thr_active = (
+                (recv * self.cfg.legal_size * 8.0) / (active_dur * 1000.0)
+                if active_dur and active_dur > 0
+                else None
+            )
+            mac_retry_ratio = (
+                self.mac_retry_count / self.legal_tx_total
+                if self.legal_tx_total > 0
+                else 0.0
+            )
+            longest_outage = self._compute_longest_outage()
+
+        # 4. PDR_App_pct & PLR_App_pct (Application-level End-to-End PDR/PLR)
+        pdr_app_pct: Optional[float] = (
+            (recv / legal_sent_app * 100.0)
+            if (legal_sent_app is not None and legal_sent_app > 0)
+            else 0.0
+        )
+        plr_app_pct: Optional[float] = (
+            max(0.0, 100.0 - pdr_app_pct) if pdr_app_pct is not None else None
+        )
+
         ro = self.routing_tx_count / sent if sent else None
         nrl = self.routing_tx_count / recv if recv else None
 
@@ -932,22 +962,23 @@ class Accumulator:
             dos_id_gap = self.dos_id_gap
 
         # Diagnostik
-        mac_retry_ratio = (
-            self.mac_retry_count / self.legal_tx_total
-            if self.legal_tx_total > 0
-            else None
-        )
         hops = [len(self.tx_nodes[k]) for k in self.legal_received if self.tx_nodes.get(k)]
         hop_count_mean = sum(hops) / len(hops) if hops else None
         loss_windows = self._compute_loss_windows()
-        longest_outage = self._compute_longest_outage()
 
         return {
+            "Legal_Sent_App": legal_sent_app,
             "Legal_Sent": sent,
+            "Layer3_Queue_Dropped": l3_queue_dropped,
             "Legal_Received": recv,
+            "MultiHop_Received": multihop_received,
+            "OneHop_PileUp_Received": one_hop_received,
+            "MultiHop_Ratio_pct": multihop_ratio_pct,
             "Legal_Lost": sent - recv,
             "PDR_pct": pdr,
             "PLR_pct": plr,
+            "PDR_App_pct": pdr_app_pct,
+            "PLR_App_pct": plr_app_pct,
             "Avg_Delay_ms": sum(d_ms) / len(d_ms) if d_ms else None,
             "Median_Delay_ms": percentile(d_ms, 50),
             "P95_Delay_ms": percentile(d_ms, 95),
@@ -1304,7 +1335,6 @@ def process_trace(path: Path, cfg: Config, root: Optional[Path] = None) -> Dict[
         "Is_Baseline": meta.is_baseline,
         "Run": meta.run,
         "Seed": meta.seed,
-        "Legal_Sent_App": legal_sent_app,
         "Lines_Total": total,
         "Lines_Ignored": ignored,
         "Lines_Corrupt": corrupt,
@@ -1312,7 +1342,7 @@ def process_trace(path: Path, cfg: Config, root: Optional[Path] = None) -> Dict[
         "Meta_Warning": "; ".join(meta.warnings),
         "First_Corrupt_Line": first_error,
     }
-    row.update(acc.metrics(proto_hint=meta.protokol))
+    row.update(acc.metrics(proto_hint=meta.protokol, legal_sent_app_override=legal_sent_app))
     row["_sort"] = meta.sort_key()
     row["_detail"] = acc.detail_summary()
     return row

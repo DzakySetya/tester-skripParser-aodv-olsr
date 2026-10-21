@@ -79,10 +79,16 @@ def t_crit_95(df: int) -> float:
 METRICS_TO_AGGREGATE = [
     "Legal_Sent_App",
     "Legal_Sent",
+    "Layer3_Queue_Dropped",
     "Legal_Received",
+    "MultiHop_Received",
+    "OneHop_PileUp_Received",
+    "MultiHop_Ratio_pct",
     "Legal_Lost",
     "PDR_pct",
     "PLR_pct",
+    "PDR_App_pct",
+    "PLR_App_pct",
     "Avg_Delay_ms",
     "Median_Delay_ms",
     "P95_Delay_ms",
@@ -120,16 +126,18 @@ SERIES_ORDER = [
 ]
 
 
-def expand_baseline_rows(df: pd.DataFrame) -> pd.DataFrame:
+def expand_baseline_rows(df: pd.DataFrame, baseline_source: str = "baseline") -> pd.DataFrame:
     """Rujuk ulang baris Baseline (10 node, 200 m, 20 km/jam seragam) ke Kelompok A, B, dan C.
 
-    Jika baris baseline sudah berlabel ``Baseline`` atau ``Is_Baseline == 1``,
-    baris tersebut direplikasi secara virtual ke:
-      - Kelompok A: Variabel_Uji='Kepadatan', Nilai_Variabel='10'
-      - Kelompok B: Variabel_Uji='Jarak', Nilai_Variabel='200'
-      - Kelompok C: Variabel_Uji='Kecepatan', Nilai_Variabel='20'
-    Lalu dideduplikasi per ``(Protokol, Kondisi, Kelompok_OFAT, Nilai_Variabel, Seed)``
-    agar titik baseline tidak pernah dihitung dua kali.
+    Args:
+        df: DataFrame mentah hasil ``vanet_trace_parser_ns3.py``.
+        baseline_source:
+            - ``'baseline'`` (default, Opsi B Dokumen Referensi): Gunakan baris
+              ``Kelompok_OFAT == 'Baseline'`` sebagai acuan tunggal untuk A (10 node),
+              B (200 m), C (20 km/jam), dan pembanding D agar keempat grafik 100% konsisten.
+            - ``'b-j200'`` (Opsi A Dokumen Referensi): Gunakan baris ``Kelompok_OFAT == 'B'``
+              dengan ``Nilai_Variabel == '200'`` sebagai acuan tunggal di A, B, C, dan D.
+            - ``'raw'``: Pertahankan baris ``b-j200`` di Kelompok B sementara A, C, D memakai Baseline.
     """
     df = df.copy()
     if "Seed" not in df.columns or df["Seed"].isna().all():
@@ -145,25 +153,30 @@ def expand_baseline_rows(df: pd.DataFrame) -> pd.DataFrame:
             & (df.get("Kelompok_OFAT") != "D")
         ).astype(int)
 
-    # Prioritaskan baris dengan Kelompok_OFAT == 'Baseline' terlebih dahulu
     explicit_base = df[df["Kelompok_OFAT"] == "Baseline"]
+    b200_base = df[
+        (df["Kelompok_OFAT"] == "B") & (df["Nilai_Variabel"].astype(str) == "200")
+    ]
     implicit_base = df[(df["Kelompok_OFAT"] != "Baseline") & (df["Is_Baseline"] == 1)]
-    base_rows = pd.concat([explicit_base, implicit_base], ignore_index=True)
+
+    if baseline_source == "b-j200" and not b200_base.empty:
+        base_rows = pd.concat([b200_base, explicit_base, implicit_base], ignore_index=True)
+    else:
+        base_rows = pd.concat([explicit_base, implicit_base], ignore_index=True)
 
     # Deduplikasi baseline per (Protokol, Kondisi, Seed)
     base_unique = base_rows.drop_duplicates(subset=["Protokol", "Kondisi", "Seed"], keep="first").copy()
 
-    # Pertahankan seluruh baris yang sudah memiliki kelompok eksplisit (A, B, C, D)
     non_base = df[df["Kelompok_OFAT"] != "Baseline"].copy()
-    expanded: List[pd.DataFrame] = [non_base]
+    expanded_base: List[pd.DataFrame] = []
 
     if not base_unique.empty:
-        # Simpan juga grup Baseline eksplisit (untuk perbandingan Kelompok D)
+        # Simpan grup Baseline eksplisit (untuk perbandingan Kelompok D)
         b_ref = base_unique.copy()
         b_ref["Kelompok_OFAT"] = "Baseline"
         b_ref["Variabel_Uji"] = "Baseline"
         b_ref["Nilai_Variabel"] = "Baseline (20 km/jam seragam)"
-        expanded.append(b_ref)
+        expanded_base.append(b_ref)
 
         for grp, var_name, val_str in (
             ("A", "Kepadatan", "10"),
@@ -174,7 +187,14 @@ def expand_baseline_rows(df: pd.DataFrame) -> pd.DataFrame:
             g_df["Kelompok_OFAT"] = grp
             g_df["Variabel_Uji"] = var_name
             g_df["Nilai_Variabel"] = val_str
-            expanded.append(g_df)
+            expanded_base.append(g_df)
+
+    # Jika baseline_source adalah 'baseline' atau 'b-j200', letakkan expanded_base di depan
+    # non_base agar titik acuan (A-10, B-200, C-20, Baseline) 100% sinkron di semua grafik.
+    if baseline_source in ("baseline", "b-j200"):
+        expanded = expanded_base + [non_base]
+    else:
+        expanded = [non_base] + expanded_base
 
     combined = pd.concat(expanded, ignore_index=True)
     combined["Nilai_Variabel"] = combined["Nilai_Variabel"].astype(str)
@@ -196,7 +216,8 @@ def compute_paired_degradation(df: pd.DataFrame) -> pd.DataFrame:
 
     keep_metrics = [
         c for c in (
-            "PDR_pct", "Avg_Delay_ms", "Median_Delay_ms", "P95_Delay_ms",
+            "PDR_pct", "PLR_pct", "PDR_App_pct", "PLR_App_pct",
+            "Avg_Delay_ms", "Median_Delay_ms", "P95_Delay_ms",
             "Throughput_kbps", "Routing_Overhead", "NRL",
         )
         if c in df.columns
@@ -214,16 +235,25 @@ def compute_paired_degradation(df: pd.DataFrame) -> pd.DataFrame:
     if "PDR_pct_Normal" in merged and "PDR_pct_DoS" in merged:
         merged["Delta_PDR"] = merged["PDR_pct_Normal"] - merged["PDR_pct_DoS"]
         merged["Degradasi_PDR_%"] = np.where(
-            merged["PDR_pct_Normal"] != 0,
+            merged["PDR_pct_Normal"] > 0,
             (merged["PDR_pct_Normal"] - merged["PDR_pct_DoS"]) / merged["PDR_pct_Normal"] * 100.0,
-            np.nan,
+            0.0,
+        )
+
+    if "PDR_App_pct_Normal" in merged and "PDR_App_pct_DoS" in merged:
+        merged["Delta_PDR_App"] = merged["PDR_App_pct_Normal"] - merged["PDR_App_pct_DoS"]
+        merged["Degradasi_PDR_App_%"] = np.where(
+            merged["PDR_App_pct_Normal"] > 0,
+            (merged["PDR_App_pct_Normal"] - merged["PDR_App_pct_DoS"])
+            / merged["PDR_App_pct_Normal"] * 100.0,
+            0.0,
         )
 
     if "Avg_Delay_ms_Normal" in merged and "Avg_Delay_ms_DoS" in merged:
         merged["Delta_Delay"] = merged["Avg_Delay_ms_Normal"] - merged["Avg_Delay_ms_DoS"]
         merged["Delta_Delay_Increase_ms"] = merged["Avg_Delay_ms_DoS"] - merged["Avg_Delay_ms_Normal"]
         merged["Degradasi_Delay_%"] = np.where(
-            merged["Avg_Delay_ms_Normal"] != 0,
+            merged["Avg_Delay_ms_Normal"] > 0,
             (merged["Avg_Delay_ms_Normal"] - merged["Avg_Delay_ms_DoS"])
             / merged["Avg_Delay_ms_Normal"] * 100.0,
             np.nan,
@@ -239,10 +269,10 @@ def compute_paired_degradation(df: pd.DataFrame) -> pd.DataFrame:
             merged["Throughput_kbps_Normal"] - merged["Throughput_kbps_DoS"]
         )
         merged["Degradasi_Throughput_%"] = np.where(
-            merged["Throughput_kbps_Normal"] != 0,
+            merged["Throughput_kbps_Normal"] > 0,
             (merged["Throughput_kbps_Normal"] - merged["Throughput_kbps_DoS"])
             / merged["Throughput_kbps_Normal"] * 100.0,
-            np.nan,
+            0.0,
         )
 
     return merged
@@ -293,6 +323,7 @@ def aggregate_metrics(df: pd.DataFrame, paired_df: pd.DataFrame) -> pd.DataFrame
             ]
             for dcol in (
                 "Delta_PDR", "Degradasi_PDR_%",
+                "Delta_PDR_App", "Degradasi_PDR_App_%",
                 "Delta_Delay", "Delta_Delay_Increase_ms", "Degradasi_Delay_%",
                 "Delta_Throughput_kbps", "Degradasi_Throughput_%",
             ):
@@ -332,7 +363,7 @@ def plot_ofat_groups(summary_df: pd.DataFrame, out_dir: Path) -> List[Path]:
         "C": ("Kelompok C - Variasi Kecepatan Seragam", "Kecepatan Kendaraan (km/jam)", [20, 30, 40]),
     }
 
-    # 1. Kelompok A, B, C (Garis dengan error bar CI 95%)
+    # 1. Kelompok A, B, C (Garis; error bar CI 95% hanya ditampilkan di judul jika N_Seeds > 1)
     for grp, (title_prefix, xlabel, x_ticks) in group_meta.items():
         sub = summary_df[summary_df["Kelompok_OFAT"] == grp].copy()
         if sub.empty:
@@ -342,34 +373,54 @@ def plot_ofat_groups(summary_df: pd.DataFrame, out_dir: Path) -> List[Path]:
         if sub.empty:
             continue
 
-        fig, axes = plt.subplots(2, 3, figsize=(18, 9.5), dpi=150)
-        fig.suptitle(f"{title_prefix} (Error Bar: 95% CI)", fontsize=14, fontweight="bold")
+        max_seeds = int(sub["N_Seeds"].max()) if "N_Seeds" in sub.columns else 1
+        sup_title = f"{title_prefix} (Error Bar: 95% CI)" if max_seeds > 1 else title_prefix
 
-        # Panel (0,0): PDR (%)
+        fig, axes = plt.subplots(2, 3, figsize=(18, 9.5), dpi=150)
+        fig.suptitle(sup_title, fontsize=14, fontweight="bold")
+
+        # Panel (0,0): PDR PHY & PDR Aplikasi Efektif (%)
         ax = axes[0, 0]
-        _plot_4_series_line(ax, sub, "PDR_pct", xlabel, "PDR (%)", "Packet Delivery Ratio (PDR)", x_ticks)
+        _plot_pdr_plr_panel_line(
+            ax, sub, "PDR_pct", "PDR_App_pct", xlabel, "PDR (%)",
+            "Packet Delivery Ratio: PHY & App Efektif (%)", x_ticks,
+        )
         ax.set_ylim(-5, 105)
 
-        # Panel (0,1): PLR / Packet Loss Ratio (%)
+        # Panel (0,1): PLR PHY & PLR Aplikasi Efektif (%)
         ax = axes[0, 1]
-        _plot_4_series_line(ax, sub, "PLR_pct", xlabel, "PLR (%)", "Packet Loss Ratio (PLR)", x_ticks)
+        _plot_pdr_plr_panel_line(
+            ax, sub, "PLR_pct", "PLR_App_pct", xlabel, "PLR (%)",
+            "Packet Loss Ratio: PHY & App Efektif (%)", x_ticks,
+        )
         ax.set_ylim(-5, 105)
 
         # Panel (0,2): Delay (Median + P95)
         ax = axes[0, 2]
         _plot_delay_panel_line(ax, sub, xlabel, x_ticks)
 
-        # Panel (1,0): Throughput (kbps)
+        # Panel (1,0): Throughput Rata-Rata (kbps)
         ax = axes[1, 0]
-        _plot_4_series_line(ax, sub, "Throughput_kbps", xlabel, "Throughput (kbps)", "Throughput (kbps)", x_ticks)
+        _plot_4_series_line(
+            ax, sub, "Throughput_kbps", xlabel,
+            "Throughput (kbps)", "Throughput Rata-Rata (kbps)", x_ticks,
+        )
 
-        # Panel (1,1): Routing Overhead (RO)
+        # Panel (1,1): Routing Overhead (RO) - Skala Logaritmik
         ax = axes[1, 1]
-        _plot_4_series_line(ax, sub, "Routing_Overhead", xlabel, "Routing Overhead (rasio)", "Routing Overhead (RO)", x_ticks)
+        _plot_4_series_line(
+            ax, sub, "Routing_Overhead", xlabel,
+            "Routing Overhead (rasio, log)", "Routing Overhead - RO (Skala Log)",
+            x_ticks, log_scale=True,
+        )
 
-        # Panel (1,2): Normalized Routing Load (NRL)
+        # Panel (1,2): Normalized Routing Load (NRL) - Skala Logaritmik
         ax = axes[1, 2]
-        _plot_4_series_line(ax, sub, "NRL", xlabel, "NRL (rasio)", "Normalized Routing Load (NRL)", x_ticks)
+        _plot_4_series_line(
+            ax, sub, "NRL", xlabel,
+            "NRL (rasio, log)", "Normalized Routing Load - NRL (Skala Log)",
+            x_ticks, log_scale=True,
+        )
 
         fig.tight_layout(rect=[0, 0, 1, 0.96])
         out_png = out_dir / f"grafik_kelompok_{grp}.png"
@@ -386,14 +437,31 @@ def plot_ofat_groups(summary_df: pd.DataFrame, out_dir: Path) -> List[Path]:
             fontsize=14,
             fontweight="bold",
         )
-        _plot_group_d_bars(axes[0, 0], sub_d, "PDR_pct", "PDR (%)", "Packet Delivery Ratio (PDR)")
+        _plot_group_d_pdr_plr_bars(
+            axes[0, 0], sub_d, "PDR_pct", "PDR_App_pct", "PDR (%)",
+            "PDR: PHY (Batang) & App Efektif (Titik ◆)",
+        )
         axes[0, 0].set_ylim(0, 108)
-        _plot_group_d_bars(axes[0, 1], sub_d, "PLR_pct", "PLR (%)", "Packet Loss Ratio (PLR)")
+        _plot_group_d_pdr_plr_bars(
+            axes[0, 1], sub_d, "PLR_pct", "PLR_App_pct", "PLR (%)",
+            "PLR: PHY (Batang) & App Efektif (Titik ◆)",
+        )
         axes[0, 1].set_ylim(0, 108)
         _plot_group_d_delay_bars(axes[0, 2], sub_d)
-        _plot_group_d_bars(axes[1, 0], sub_d, "Throughput_kbps", "Throughput (kbps)", "Throughput (kbps)")
-        _plot_group_d_bars(axes[1, 1], sub_d, "Routing_Overhead", "Routing Overhead (rasio)", "Routing Overhead (RO)")
-        _plot_group_d_bars(axes[1, 2], sub_d, "NRL", "NRL (rasio)", "Normalized Routing Load (NRL)")
+        _plot_group_d_bars(
+            axes[1, 0], sub_d, "Throughput_kbps",
+            "Throughput (kbps)", "Throughput Rata-Rata (kbps)",
+        )
+        _plot_group_d_bars(
+            axes[1, 1], sub_d, "Routing_Overhead",
+            "Routing Overhead (rasio, log)", "Routing Overhead - RO (Skala Log)",
+            log_scale=True,
+        )
+        _plot_group_d_bars(
+            axes[1, 2], sub_d, "NRL",
+            "NRL (rasio, log)", "Normalized Routing Load - NRL (Skala Log)",
+            log_scale=True,
+        )
 
         fig.tight_layout(rect=[0, 0, 1, 0.96])
         out_png = out_dir / "grafik_kelompok_D.png"
@@ -404,11 +472,21 @@ def plot_ofat_groups(summary_df: pd.DataFrame, out_dir: Path) -> List[Path]:
     return saved_files
 
 
-def _plot_4_series_line(ax, sub: pd.DataFrame, metric: str, xlabel: str, ylabel: str, title: str, x_ticks: Sequence[int]) -> None:
+def _plot_4_series_line(
+    ax,
+    sub: pd.DataFrame,
+    metric: str,
+    xlabel: str,
+    ylabel: str,
+    title: str,
+    x_ticks: Sequence[int],
+    log_scale: bool = False,
+) -> None:
     m_col = f"{metric}_mean"
     e_col = f"{metric}_ci95"
     if m_col not in sub.columns:
         return
+    has_positive = False
     for proto, cond, label, color, ls, marker in SERIES_ORDER:
         s = sub[(sub["Protokol"] == proto) & (sub["Kondisi"] == cond)]
         if s.empty:
@@ -416,20 +494,82 @@ def _plot_4_series_line(ax, sub: pd.DataFrame, metric: str, xlabel: str, ylabel:
         x = s["x_val"].to_numpy(dtype=float)
         y = s[m_col].to_numpy(dtype=float)
         yerr = s[e_col].fillna(0.0).to_numpy(dtype=float) if e_col in s.columns else np.zeros_like(y)
-        valid = ~np.isnan(y)
+        valid = (~np.isnan(y)) & (y > 0 if log_scale else True)
         if not valid.any():
             continue
+        has_positive = True
         ax.errorbar(
             x[valid], y[valid], yerr=yerr[valid],
             label=label, color=color, linestyle=ls, marker=marker,
             capsize=4, linewidth=1.8, markersize=6,
         )
+    if log_scale and has_positive:
+        from matplotlib.ticker import FuncFormatter, NullFormatter
+        ax.set_yscale("log")
+        ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f"{y:g}"))
+        ymin, ymax = ax.get_ylim()
+        if ymax / max(ymin, 1e-9) < 100.0:
+            ax.yaxis.set_minor_formatter(
+                FuncFormatter(
+                    lambda y, _: f"{y:g}"
+                    if round(y * 10, 4) in (2, 3, 4, 5, 6, 20, 30, 50)
+                    else ""
+                )
+            )
+        else:
+            ax.yaxis.set_minor_formatter(NullFormatter())
+    ax.set_title(title, fontsize=11, fontweight="bold")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_xticks(x_ticks)
+    ax.grid(True, which="both" if log_scale else "major", linestyle=":", alpha=0.6)
+    ax.legend(fontsize=8.5)
+
+
+def _plot_pdr_plr_panel_line(
+    ax,
+    sub: pd.DataFrame,
+    phy_metric: str,
+    app_metric: str,
+    xlabel: str,
+    ylabel: str,
+    title: str,
+    x_ticks: Sequence[int],
+) -> None:
+    phy_col = f"{phy_metric}_mean"
+    phy_err = f"{phy_metric}_ci95"
+    app_col = f"{app_metric}_mean"
+
+    for proto, cond, label, color, ls, marker in SERIES_ORDER:
+        s = sub[(sub["Protokol"] == proto) & (sub["Kondisi"] == cond)]
+        if s.empty:
+            continue
+        x = s["x_val"].to_numpy(dtype=float)
+        if phy_col in s.columns:
+            y_phy = s[phy_col].to_numpy(dtype=float)
+            e_phy = s[phy_err].fillna(0.0).to_numpy(dtype=float) if phy_err in s.columns else np.zeros_like(y_phy)
+            v = ~np.isnan(y_phy)
+            if v.any():
+                ax.errorbar(
+                    x[v], y_phy[v], yerr=e_phy[v],
+                    label=f"{label} (PHY)", color=color, linestyle=ls, marker=marker,
+                    capsize=3, linewidth=1.8, markersize=5,
+                )
+        if app_col in s.columns:
+            y_app = s[app_col].to_numpy(dtype=float)
+            v_app = ~np.isnan(y_app)
+            if v_app.any():
+                ax.plot(
+                    x[v_app], y_app[v_app],
+                    label=f"{label} (App)", color=color, linestyle=":", marker=marker,
+                    alpha=0.72, linewidth=1.4, markersize=4,
+                )
     ax.set_title(title, fontsize=11, fontweight="bold")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_xticks(x_ticks)
     ax.grid(True, linestyle=":", alpha=0.6)
-    ax.legend(fontsize=8.5)
+    ax.legend(fontsize=7.2, ncol=2)
 
 
 def _plot_delay_panel_line(ax, sub: pd.DataFrame, xlabel: str, x_ticks: Sequence[int]) -> None:
@@ -466,6 +606,7 @@ def _plot_delay_panel_line(ax, sub: pd.DataFrame, xlabel: str, x_ticks: Sequence
 
 
 def _plot_ro_nrl_panel_line(ax, sub: pd.DataFrame, xlabel: str, x_ticks: Sequence[int]) -> None:
+    has_pos = False
     for proto, cond, label, color, ls, marker in SERIES_ORDER:
         s = sub[(sub["Protokol"] == proto) & (sub["Kondisi"] == cond)]
         if s.empty:
@@ -474,8 +615,9 @@ def _plot_ro_nrl_panel_line(ax, sub: pd.DataFrame, xlabel: str, x_ticks: Sequenc
         if "NRL_mean" in s.columns:
             y_nrl = s["NRL_mean"].to_numpy(dtype=float)
             e_nrl = s["NRL_ci95"].fillna(0.0).to_numpy(dtype=float)
-            v = ~np.isnan(y_nrl)
+            v = (~np.isnan(y_nrl)) & (y_nrl > 0)
             if v.any():
+                has_pos = True
                 ax.errorbar(
                     x[v], y_nrl[v], yerr=e_nrl[v],
                     label=f"{label} (NRL)", color=color, linestyle=ls, marker=marker,
@@ -483,28 +625,39 @@ def _plot_ro_nrl_panel_line(ax, sub: pd.DataFrame, xlabel: str, x_ticks: Sequenc
                 )
         if "Routing_Overhead_mean" in s.columns:
             y_ro = s["Routing_Overhead_mean"].to_numpy(dtype=float)
-            v_ro = ~np.isnan(y_ro)
+            v_ro = (~np.isnan(y_ro)) & (y_ro > 0)
             if v_ro.any():
+                has_pos = True
                 ax.plot(
                     x[v_ro], y_ro[v_ro],
                     label=f"{label} (RO)", color=color, linestyle=":", marker=marker,
                     alpha=0.65, linewidth=1.3, markersize=4,
                 )
-    ax.set_title("Beban Kontrol Routing: NRL & RO", fontsize=11, fontweight="bold")
+    if has_pos:
+        ax.set_yscale("log")
+    ax.set_title("Beban Kontrol Routing: NRL & RO (Skala Log)", fontsize=11, fontweight="bold")
     ax.set_xlabel(xlabel)
-    ax.set_ylabel("Rasio Paket Kontrol")
+    ax.set_ylabel("Rasio Paket Kontrol (log)")
     ax.set_xticks(x_ticks)
-    ax.grid(True, linestyle=":", alpha=0.6)
+    ax.grid(True, which="both", linestyle=":", alpha=0.6)
     ax.legend(fontsize=7.5, ncol=2)
 
 
-def _plot_group_d_bars(ax, sub_d: pd.DataFrame, metric: str, ylabel: str, title: str) -> None:
+def _plot_group_d_bars(
+    ax,
+    sub_d: pd.DataFrame,
+    metric: str,
+    ylabel: str,
+    title: str,
+    log_scale: bool = False,
+) -> None:
     categories = ["Baseline", "D"]
     cat_labels = ["Baseline\n(20 km/jam Seragam)", "Kelompok D\n(15-25 km/jam Acak)"]
     x = np.arange(len(categories))
     width = 0.18
     m_col = f"{metric}_mean"
     e_col = f"{metric}_ci95"
+    has_pos = False
 
     for idx, (proto, cond, label, color, _, _) in enumerate(SERIES_ORDER):
         means, errs = [], []
@@ -517,7 +670,10 @@ def _plot_group_d_bars(ax, sub_d: pd.DataFrame, metric: str, ylabel: str, title:
             if not row.empty and m_col in row.columns:
                 val = float(row.iloc[0][m_col])
                 err = float(row.iloc[0][e_col]) if e_col in row.columns and not pd.isna(row.iloc[0][e_col]) else 0.0
-                means.append(0.0 if np.isnan(val) else val)
+                v_clean = 0.0 if np.isnan(val) else val
+                if v_clean > 0:
+                    has_pos = True
+                means.append(v_clean)
                 errs.append(0.0 if np.isnan(err) else err)
             else:
                 means.append(0.0)
@@ -525,12 +681,74 @@ def _plot_group_d_bars(ax, sub_d: pd.DataFrame, metric: str, ylabel: str, title:
         offset = (idx - 1.5) * width
         ax.bar(x + offset, means, width, yerr=errs, label=label, color=color, capsize=3, alpha=0.88)
 
+    if log_scale and has_pos:
+        from matplotlib.ticker import FuncFormatter, NullFormatter
+        ax.set_yscale("log")
+        ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f"{y:g}"))
+        ymin, ymax = ax.get_ylim()
+        if ymax / max(ymin, 1e-9) < 100.0:
+            ax.yaxis.set_minor_formatter(
+                FuncFormatter(
+                    lambda y, _: f"{y:g}"
+                    if round(y * 10, 4) in (2, 3, 4, 5, 6, 20, 30, 50)
+                    else ""
+                )
+            )
+        else:
+            ax.yaxis.set_minor_formatter(NullFormatter())
+    ax.set_title(title, fontsize=11, fontweight="bold")
+    ax.set_xticks(x)
+    ax.set_xticklabels(cat_labels)
+    ax.set_ylabel(ylabel)
+    ax.grid(True, axis="y", which="both" if log_scale else "major", linestyle=":", alpha=0.6)
+    ax.legend(fontsize=8.5)
+
+
+def _plot_group_d_pdr_plr_bars(
+    ax,
+    sub_d: pd.DataFrame,
+    phy_metric: str,
+    app_metric: str,
+    ylabel: str,
+    title: str,
+) -> None:
+    categories = ["Baseline", "D"]
+    cat_labels = ["Baseline\n(20 km/jam Seragam)", "Kelompok D\n(15-25 km/jam Acak)"]
+    x = np.arange(len(categories))
+    width = 0.18
+    phy_col = f"{phy_metric}_mean"
+    phy_err = f"{phy_metric}_ci95"
+    app_col = f"{app_metric}_mean"
+
+    for idx, (proto, cond, label, color, _, _) in enumerate(SERIES_ORDER):
+        phys, errs, apps = [], [], []
+        for cat in categories:
+            row = sub_d[
+                (sub_d["Kelompok_OFAT"] == cat)
+                & (sub_d["Protokol"] == proto)
+                & (sub_d["Kondisi"] == cond)
+            ]
+            if not row.empty:
+                p_val = float(row.iloc[0].get(phy_col, np.nan))
+                e_val = float(row.iloc[0].get(phy_err, 0.0))
+                a_val = float(row.iloc[0].get(app_col, np.nan))
+                phys.append(0.0 if np.isnan(p_val) else p_val)
+                errs.append(0.0 if np.isnan(e_val) else e_val)
+                apps.append(np.nan if np.isnan(a_val) else a_val)
+            else:
+                phys.append(0.0)
+                errs.append(0.0)
+                apps.append(np.nan)
+        offset = (idx - 1.5) * width
+        ax.bar(x + offset, phys, width, yerr=errs, label=f"{label} (PHY)", color=color, capsize=3, alpha=0.85)
+        ax.plot(x + offset, apps, marker="D", linestyle="none", color="black", markersize=4)
+
     ax.set_title(title, fontsize=11, fontweight="bold")
     ax.set_xticks(x)
     ax.set_xticklabels(cat_labels)
     ax.set_ylabel(ylabel)
     ax.grid(True, axis="y", linestyle=":", alpha=0.6)
-    ax.legend(fontsize=8.5)
+    ax.legend(fontsize=8)
 
 
 def _plot_group_d_delay_bars(ax, sub_d: pd.DataFrame) -> None:
@@ -582,6 +800,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
                    help="nama file CSV ringkasan agregasi di dalam --out-dir")
     p.add_argument("--paired-csv", default="vanet_paired_degradation.csv",
                    help="nama file CSV degradasi Normal-vs-DoS per pasangan seed di dalam --out-dir")
+    p.add_argument("--baseline-source", choices=["baseline", "b-j200", "raw"], default="baseline",
+                   help="sumber titik acuan Baseline (10 node, 200 m, 20 km/jam): "
+                        "'baseline' (default, Opsi B: sinkronkan A-10, B-200, C-20, D ke file Baseline), "
+                        "'b-j200' (Opsi A: sinkronkan ke file b-j200), atau 'raw'")
     p.add_argument("--no-plots", action="store_true",
                    help="jangan buat grafik PNG (hanya ekspor CSV)")
     return p
@@ -601,7 +823,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return 2
 
     raw_df = pd.concat(dfs, ignore_index=True)
-    expanded_df = expand_baseline_rows(raw_df)
+    expanded_df = expand_baseline_rows(raw_df, baseline_source=args.baseline_source)
     paired_df = compute_paired_degradation(expanded_df)
     summary_df = aggregate_metrics(expanded_df, paired_df)
 
