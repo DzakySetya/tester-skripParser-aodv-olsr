@@ -2,21 +2,29 @@
 __pycache__/
 *.py[cod]
 
+# File bagian simulator NS-3 / SUMO & pengujian internal (bukan bagian parser/visualisasi)
+*.cc
+generate_mobility_kelompok_d.py
+run_vanet_batch.py
+test_ns3_parser.py
+generate_sample_traces.py
+vanet_trace_parser.py
+
 # File trace NS-3 berukuran besar (>100 MB) & hasil sementara
-tester/*.tr
+tester/
 results_raw/
 aggregated_regression/
 TEST_*
 TEST2_*
 out*.csv
 csv_olsr_*.csv
+olsr_normal_*.csv
+olsr_normal_*.json
+hasil_detail.json
+hasil_semua_40_detail.json
 *.xlsx
 samples/
 mobility/
 regression_*.csv
 regression_*.json
-olsr_normal_parsed.csv
-olsr_normal_detail.json
-hasil_detail.json
-hasil_semua_40_detail.json
 skripParser/
