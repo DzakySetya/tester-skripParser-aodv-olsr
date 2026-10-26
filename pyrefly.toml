@@ -1,0 +1,4 @@
+python_interpreter = "C:/Users/dzaky/AppData/Local/Python/pythoncore-3.14-64/python.exe"
+site_package_path = [
+    "C:/Users/dzaky/AppData/Local/Python/pythoncore-3.14-64/Lib/site-packages",
+]

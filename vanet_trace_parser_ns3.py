@@ -3,9 +3,9 @@
 """
 vanet_trace_parser_ns3.py
 =========================
-Parser single-pass streaming (100% Python Standard Library) untuk 40 file trace (.tr)
-VANET NS-3 dengan pemotongan jendela fase multi-hop (T_direct) guna mengeliminasi bias
-penumpukan kendaraan di ujung jalan (End-of-Road 1-Hop Pile-Up), sesuai spesifikasi Proposal PBL.
+Parser single-pass streaming (100% Python Standard Library) untuk seluruh 40 file trace (.tr)
+simulasi VANET NS-3 (AODV vs OLSR | Normal vs DoS) dengan pemotongan jendela fase multi-hop
+(T_direct) guna memisahkan efek penumpukan akhir jalan (OneHop_PileUp_Received).
 """
 
 from __future__ import annotations
@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import csv
 import importlib
+import math
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -32,20 +33,18 @@ FILE_RE = re.compile(
 )
 
 # Matriks 10 skenario (40 file .tr):
-# token -> (Kelompok, Variabel, Nilai, Nodes, Dist_m, Speed_kmh, T_direct_s)
-# T_direct_s adalah detik pertama saat jarak node0 ke penerima (node N-2) <= maxRange
-# (250 m untuk Baseline/A/C/D, 350 m untuk Kelompok B). Nilainya identik untuk AODV & OLSR, Normal & DoS.
-SCENARIO_MAP: Dict[str, Tuple[str, str, str, int, int, str, Optional[float]]] = {
-    "baseline": ("Baseline", "Baseline",      "Baseline", 10, 200, "20",    None),
-    "a-n20":    ("A",        "Kepadatan",     "20",       20, 200, "20",    512.992),
-    "a-n30":    ("A",        "Kepadatan",     "30",       30, 200, "20",    692.972),
-    "b-j100":   ("B",        "Jarak",         "100",      10, 100, "20",    243.022),
-    "b-j200":   ("B",        "Jarak",         "200",      10, 200, "20",    314.989),
-    "b-j300":   ("B",        "Jarak",         "300",      10, 300, "20",    386.916),
-    "b-j400":   ("B",        "Jarak",         "400",      10, 400, "20",    459.137),
-    "c-k30":    ("C",        "Kecepatan",     "30",       10, 200, "30",    223.068),
-    "c-k40":    ("C",        "Kecepatan",     "40",       10, 200, "40",    167.532),
-    "d":        ("D",        "Heterogenitas", "15-25",    10, 200, "15-25", 312.040),
+# token -> (Kelompok_OFAT, Variabel_Uji, Nilai_Variabel, Nodes, Dist_m, Speed_kmh, MaxRange_m, Default_T_direct_s)
+SCENARIO_MAP: Dict[str, Tuple[str, str, str, int, int, str, float, Optional[float]]] = {
+    "baseline": ("Baseline", "Baseline",      "Baseline", 10, 200, "20",    250.0, None),
+    "a-n20":    ("A",        "Kepadatan",     "20",       20, 200, "20",    250.0, 513.0),
+    "a-n30":    ("A",        "Kepadatan",     "30",       30, 200, "20",    250.0, 694.0),
+    "b-j100":   ("B",        "Jarak",         "100",      10, 100, "20",    350.0, 243.0),
+    "b-j200":   ("B",        "Jarak",         "200",      10, 200, "20",    350.0, 315.0),
+    "b-j300":   ("B",        "Jarak",         "300",      10, 300, "20",    350.0, 387.0),
+    "b-j400":   ("B",        "Jarak",         "400",      10, 400, "20",    350.0, 459.0),
+    "c-k30":    ("C",        "Kecepatan",     "30",       10, 200, "30",    250.0, 223.0),
+    "c-k40":    ("C",        "Kecepatan",     "40",       10, 200, "40",    250.0, 168.0),
+    "d":        ("D",        "Heterogenitas", "15-25",    10, 200, "15-25", 250.0, 312.0),
 }
 
 CSV_COLUMNS = [
@@ -58,19 +57,20 @@ CSV_COLUMNS = [
     "Jumlah_Node",
     "Jarak_m",
     "Kecepatan_kmh",
+    "MaxRange_m",
     "T_direct_s",
     "Window_Duration_s",
     "Tx_Packets",
     "Rx_Packets",
     "Lost_Packets",
     "OneHop_PileUp_Received",
+    "Hop_Count_Mean",
     "Throughput_kbps",
     "PDR_pct",
     "PLR_pct",
     "Avg_Delay_ms",
-    "Avg_Hop_Count",
     "Routing_Overhead_Pkts",
-    "RO_per_Sec",
+    "RO_per_s",
     "NRL_Ratio",
 ]
 
@@ -83,38 +83,100 @@ SERIES_STYLE = [
 
 
 # ------------------------------------------------------------------------------
+# KALKULASI T_direct DARI FILE MOBILITAS .tcl (JIKA TERSEDIA)
+# ------------------------------------------------------------------------------
+def compute_t_direct_from_tcl(tcl_path: Path, n_nodes: int, max_range: float) -> Optional[float]:
+    """Hitung detik pertama saat jarak Euclidean node_(0) ke node_(N-2) <= max_range dari file .tcl."""
+    if not tcl_path.is_file():
+        return None
+
+    init_re = re.compile(r"^\$node_\((\d+)\)\s+set\s+([XYZ])_\s+([+\-\d.eE]+)")
+    dest_re = re.compile(
+        r'^\$ns_\s+at\s+([+\-\d.eE]+)\s+"\$node_\((\d+)\)\s+setdest\s+([+\-\d.eE]+)\s+([+\-\d.eE]+)\s+([+\-\d.eE]+)"'
+    )
+    target_nodes = {0, n_nodes - 2}
+    pos: Dict[int, List[float]] = {0: [0.0, 0.0], n_nodes - 2: [0.0, 0.0]}
+    segs: Dict[int, List[Tuple[float, float, float, float, float, float]]] = {0: [], n_nodes - 2: []}
+    max_t = 0.0
+
+    with tcl_path.open("r", encoding="utf-8", errors="replace") as fh:
+        for line in fh:
+            line = line.strip()
+            m1 = init_re.match(line)
+            if m1:
+                nid, axis, val = int(m1.group(1)), m1.group(2), float(m1.group(3))
+                if nid in target_nodes and axis in ("X", "Y"):
+                    pos[nid][0 if axis == "X" else 1] = val
+                continue
+            m2 = dest_re.match(line)
+            if m2:
+                t0, nid, dx, dy, spd = (
+                    float(m2.group(1)),
+                    int(m2.group(2)),
+                    float(m2.group(3)),
+                    float(m2.group(4)),
+                    float(m2.group(5)),
+                )
+                if nid in target_nodes:
+                    x0, y0 = pos[nid] if not segs[nid] else (segs[nid][-1][3], segs[nid][-1][4])
+                    dist = math.hypot(dx - x0, dy - y0)
+                    t1 = t0 + (dist / spd) if spd > 0 else t0
+                    segs[nid].append((t0, x0, y0, dx, dy, t1))
+                    if t1 > max_t:
+                        max_t = t1
+
+    def interp(nid: int, t: float) -> Tuple[float, float]:
+        if not segs[nid]:
+            return pos[nid][0], pos[nid][1]
+        for t0, x0, y0, dx, dy, t1 in segs[nid]:
+            if t <= t0:
+                return x0, y0
+            if t <= t1:
+                if t1 <= t0:
+                    return dx, dy
+                r = (t - t0) / (t1 - t0)
+                return x0 + r * (dx - x0), y0 + r * (dy - y0)
+        return segs[nid][-1][3], segs[nid][-1][4]
+
+    t_cur = 0.0
+    while t_cur <= max_t + 1.0:
+        x0, y0 = interp(0, t_cur)
+        x1, y1 = interp(n_nodes - 2, t_cur)
+        if math.hypot(x1 - x0, y1 - y0) <= max_range:
+            return round(t_cur, 4)
+        t_cur += 0.1
+    return None
+
+
+# ------------------------------------------------------------------------------
 # 1. FUNGSI UNIVERSAL PARSING (Single-Pass Streaming dengan Pemotongan T_direct)
 # ------------------------------------------------------------------------------
 def parse_trace(
     filepath: Path,
     t_direct: Optional[float] = None,
-    app_start: float = 5.0,
+    app_start_s: float = 5.0,
     legal_port: int = 9,
     legal_size: int = 512,
     id_wrap_window: float = 60.0,
 ) -> Dict[str, Any]:
     """
-    Baca satu file trace .tr secara streaming (single-pass) dan hitung metrik QoS & Non-QoS
-    pada jendela fase multi-hop [app_start, T_direct).
-    - Paket data yang dikirim node0 sebelum T_direct (t_tx < T_direct) dihitung sebagai Tx_Packets,
-      dan jika tiba di penerima (meskipun sedikit sesudah T_direct) tetap dicocokkan lewat UID sebagai Rx_Packets.
-    - Paket data yang dikirim pada/sesudah T_direct (fase menumpuk di ujung jalan) dicatat terpisah
-      pada kolom OneHop_PileUp_Received.
+    Baca satu file trace .tr secara streaming (single-pass) dan hitung metrik pada jendela
+    fase multi-hop (t_tx < T_direct). Paket 1-hop di fase tumpukan akhir disimpan terpisah
+    pada kolom OneHop_PileUp_Received.
     """
+    cutoff = t_direct if t_direct is not None else float("inf")
     tx_times: Dict[Tuple[str, str, int, int], float] = {}
     rx_seen: set[Tuple[str, str, int, int]] = set()
     pileup_seen: set[Tuple[str, str, int, int]] = set()
     epochs: Dict[Tuple[str, str, int], List[float]] = {}
 
-    t_last_trace: float = 0.0
-    t_last_tx: float = 0.0
     delay_sum_s: float = 0.0
     hop_sum: int = 0
     ro_packets: int = 0
+    last_trace_t: float = 0.0
 
     with filepath.open("r", encoding="utf-8", errors="replace") as fh:
         for line in fh:
-            # Fast C-level gate: lewati baris non-event atau frame MAC/ARP tanpa IPv4Header
             if not line or line[0] not in ("t", "+", "r") or "Ipv4Header" not in line:
                 continue
 
@@ -124,17 +186,17 @@ def parse_trace(
 
             ev, ts_s, node_s, retry_s, da_mac, ttl_s, ipid_s, src, dst, ulen_s, sport_s, dport_s = m.groups()
             t = float(ts_s)
-            if t > t_last_trace:
-                t_last_trace = t
+            if t > last_trace_t:
+                last_trace_t = t
 
             node = int(node_s)
             is_retry = retry_s == "1"
             dport = int(dport_s)
             sport = int(sport_s)
 
-            # 1. Paket Kontrol Routing (AODV=654, OLSR=698): hitung sampai T_direct (bukan retry MAC)
+            # 1. Paket Kontrol Routing (AODV=654, OLSR=698): dipotong sampai T_direct
             if sport in (654, 698) or dport in (654, 698):
-                if ev in ("t", "+") and not is_retry and (t_direct is None or t < t_direct):
+                if ev in ("t", "+") and not is_retry and t < cutoff:
                     ro_packets += 1
                 continue
 
@@ -152,7 +214,7 @@ def parse_trace(
             ipid = int(ipid_s)
             base_key = (src, dst, ipid)
 
-            # Kunci Tx End-to-End hanya pada node pengirim awal (node 0 di barisan paling depan)
+            # Kunci Tx End-to-End pada node0: hanya paket yang dikirim sebelum T_direct masuk jendela evaluasi
             if ev in ("t", "+"):
                 if is_retry or node != src_node:
                     continue
@@ -167,67 +229,65 @@ def parse_trace(
                     ep = int(ent[0])
 
                 uid = (src, dst, ipid, ep)
-                if uid not in tx_times:
+                if t < cutoff and uid not in tx_times:
                     tx_times[uid] = t
-                    if t > t_last_tx:
-                        t_last_tx = t
 
-            # Kunci Rx End-to-End hanya pada node tujuan akhir (node N-2) + validasi MAC DA(RA)
+            # Kunci Rx End-to-End pada node penerima akhir (node N-2) + validasi MAC DA(RA)
             elif ev == "r" and node == dst_node:
                 if not da_mac or (int(da_mac[-2:], 16) - 1) != dst_node:
                     continue
                 ent = epochs.get(base_key)
                 ep = int(ent[0]) if ent is not None else 0
                 uid = (src, dst, ipid, ep)
-                t0 = tx_times.get(uid)
-                if t0 is not None and t >= t0:
-                    # Potong berdasarkan waktu kirim paket (t0 < T_direct)
-                    if t_direct is None or t0 < t_direct:
-                        if uid not in rx_seen:
-                            rx_seen.add(uid)
-                            delay_sum_s += (t - t0)
-                            ttl_val = int(ttl_s)
-                            hop_sum += max(1, 64 - ttl_val + 1) if ttl_val <= 64 else 1
-                    else:
-                        pileup_seen.add(uid)
+                hop = 64 - int(ttl_s) + 1
 
-    # Hitung hanya paket yang dikirim sebelum T_direct
-    tx_count = sum(1 for t0 in tx_times.values() if t_direct is None or t0 < t_direct)
+                # Dokumentasikan paket fase pile-up 1-hop secara terpisah
+                if hop == 1 and uid not in pileup_seen:
+                    pileup_seen.add(uid)
+
+                # Paket yang dikirim sebelum T_direct (termasuk yang tiba sedikit sesudah T_direct) tetap dihitung
+                t0 = tx_times.get(uid)
+                if t0 is not None and uid not in rx_seen and t >= t0:
+                    rx_seen.add(uid)
+                    delay_sum_s += (t - t0)
+                    hop_sum += hop
+
+    tx_count = len(tx_times)
     rx_count = len(rx_seen)
     lost_count = tx_count - rx_count
     pileup_count = len(pileup_seen)
 
-    # Panjang jendela waktu multi-hop: (T_direct - 5.0), atau (t_end_cbr - 5.0) bila tidak pernah pile-up
-    effective_end = t_direct if t_direct is not None else (t_last_tx if t_last_tx > app_start else max(t_last_trace - 2.0, app_start))
-    window_dur = max(0.0, effective_end - app_start)
+    # Panjang jendela evaluasi = (T_direct - 5.0), atau (waktu akhir trace - 5.0) bila tidak pernah masuk 1-hop
+    effective_end = t_direct if t_direct is not None else last_trace_t
+    window_dur = max(0.0, effective_end - app_start_s)
 
-    # Guard clauses defensif terhadap ZeroDivisionError (mis. jarak 400 m di luar jangkauan 350 m)
+    # Guard clauses defensif terhadap ZeroDivisionError (mis. jarak 400 m di luar jangkauan radio)
     pdr_pct = (rx_count / tx_count * 100.0) if tx_count > 0 else 0.0
     plr_pct = (lost_count / tx_count * 100.0) if tx_count > 0 else 100.0
     avg_delay_ms = (delay_sum_s / rx_count * 1000.0) if rx_count > 0 else 0.0
-    avg_hop = (hop_sum / rx_count) if rx_count > 0 else 0.0
+    hop_mean = (hop_sum / rx_count) if rx_count > 0 else 0.0
     throughput_kbps = (
         (rx_count * legal_size * 8.0) / (window_dur * 1000.0)
         if (rx_count > 0 and window_dur > 0.0)
         else 0.0
     )
-    ro_per_sec = (ro_packets / window_dur) if window_dur > 0.0 else 0.0
+    ro_per_s = (ro_packets / window_dur) if window_dur > 0.0 else 0.0
     nrl = (ro_packets / rx_count) if rx_count > 0 else 0.0
 
     return {
-        "T_direct_s": round(t_direct, 3) if t_direct is not None else "Full_Run",
-        "Window_Duration_s": round(window_dur, 3),
+        "T_direct_s": round(t_direct, 2) if t_direct is not None else "FullRun",
+        "Window_Duration_s": round(window_dur, 4),
         "Tx_Packets": tx_count,
         "Rx_Packets": rx_count,
         "Lost_Packets": lost_count,
         "OneHop_PileUp_Received": pileup_count,
+        "Hop_Count_Mean": round(hop_mean, 4),
         "Throughput_kbps": round(throughput_kbps, 4),
         "PDR_pct": round(pdr_pct, 4),
         "PLR_pct": round(plr_pct, 4),
         "Avg_Delay_ms": round(avg_delay_ms, 4),
-        "Avg_Hop_Count": round(avg_hop, 4),
         "Routing_Overhead_Pkts": ro_packets,
-        "RO_per_Sec": round(ro_per_sec, 4),
+        "RO_per_s": round(ro_per_s, 4),
         "NRL_Ratio": round(nrl, 4),
     }
 
@@ -235,9 +295,13 @@ def parse_trace(
 # ------------------------------------------------------------------------------
 # 2. FUNGSI EKSPOR MASTER DATASET CSV (Seluruh 40 File Trace)
 # ------------------------------------------------------------------------------
-def export_master_csv(trace_dir: Path, csv_path: Path) -> List[Dict[str, Any]]:
-    """Parse seluruh 40 file trace (.tr) pada jendela multi-hop T_direct dan ekspor ke Master CSV."""
-    files: List[Tuple[str, str, str, Path]] = []
+def export_master_csv(
+    trace_dir: Path,
+    csv_path: Path,
+    tcl_dir: Optional[Path] = None,
+) -> List[Dict[str, Any]]:
+    """Parse seluruh 40 file trace .tr dengan batas T_direct per skenario dan simpan ke Master CSV."""
+    matched_files: List[Tuple[str, str, str, Path]] = []
 
     for p in sorted(trace_dir.rglob("*.tr")):
         m = FILE_RE.match(p.stem)
@@ -245,12 +309,21 @@ def export_master_csv(trace_dir: Path, csv_path: Path) -> List[Dict[str, Any]]:
             continue
         proto, tok, cond = m.group(1).upper(), m.group(2).lower(), m.group(3).lower()
         cond_label = "DoS" if cond == "dos" else "Normal"
-        files.append((proto, cond_label, tok, p))
+        matched_files.append((proto, cond_label, tok, p))
 
     rows: List[Dict[str, Any]] = []
-    total = len(files)
-    for idx, (proto, cond, tok, path) in enumerate(files, 1):
-        grp, var_name, val_str, nodes, dist, speed, t_direct = SCENARIO_MAP[tok]
+    total = len(matched_files)
+
+    for idx, (proto, cond, tok, path) in enumerate(matched_files, 1):
+        grp, var_name, val_str, nodes, dist, speed, max_range, default_tdirect = SCENARIO_MAP[tok]
+
+        # Jika direktori .tcl diberikan dan ada file .tcl skenario terkait, hitung T_direct dari .tcl
+        t_direct = default_tdirect
+        if tcl_dir is not None:
+            tcl_candidate = tcl_dir / f"{tok}.tcl"
+            if tcl_candidate.is_file():
+                t_direct = compute_t_direct_from_tcl(tcl_candidate, nodes, max_range)
+
         metrics = parse_trace(path, t_direct=t_direct)
         row: Dict[str, Any] = {
             "File": path.name,
@@ -262,14 +335,16 @@ def export_master_csv(trace_dir: Path, csv_path: Path) -> List[Dict[str, Any]]:
             "Jumlah_Node": nodes,
             "Jarak_m": dist,
             "Kecepatan_kmh": speed,
+            "MaxRange_m": int(max_range),
             **metrics,
         }
         rows.append(row)
         print(
-            f"[{idx:02d}/{total:02d}] {path.name:<26} | T_dir={str(metrics['T_direct_s']):<8} Win={metrics['Window_Duration_s']:>6.1f}s | "
-            f"Tx={metrics['Tx_Packets']:>5} Rx={metrics['Rx_Packets']:>5} PileUp={metrics['OneHop_PileUp_Received']:>4} | "
+            f"[{idx:02d}/{total:02d}] {path.name:<26} | {proto:<4} {cond:<6} | "
+            f"Grp={grp:<8} Val={val_str:<8} T_dir={str(metrics['T_direct_s']):<7} | "
+            f"Tx={metrics['Tx_Packets']:>6} Rx={metrics['Rx_Packets']:>6} PileUp={metrics['OneHop_PileUp_Received']:>4} "
             f"PDR={metrics['PDR_pct']:>6.2f}% Delay={metrics['Avg_Delay_ms']:>6.2f}ms "
-            f"Tput={metrics['Throughput_kbps']:>6.2f}kbps RO/s={metrics['RO_per_Sec']:>5.2f}"
+            f"Tput={metrics['Throughput_kbps']:>6.2f}kbps RO/s={metrics['RO_per_s']:>6.2f} NRL={metrics['NRL_Ratio']:>8.2f}"
         )
 
     csv_path.parent.mkdir(parents=True, exist_ok=True)
@@ -278,7 +353,7 @@ def export_master_csv(trace_dir: Path, csv_path: Path) -> List[Dict[str, Any]]:
         writer.writeheader()
         writer.writerows(rows)
 
-    print(f"\n[+] Master Dataset CSV tersimpan: {csv_path.resolve()} ({len(rows)} file skenario)")
+    print(f"\n[+] Master Dataset CSV tersimpan: {csv_path.resolve()} ({len(rows)} baris skenario)")
     return rows
 
 
@@ -287,10 +362,9 @@ def export_master_csv(trace_dir: Path, csv_path: Path) -> List[Dict[str, Any]]:
 # ------------------------------------------------------------------------------
 def generate_plots(rows: List[Dict[str, Any]], out_dir: Path) -> List[Path]:
     """
-    Buat 4 grafik PNG komparasi (AODV vs OLSR | Normal vs DoS):
-    - Kelompok A (10*, 20, 30 node) & C (20*, 30, 40 km/jam): memakai Baseline* (maxRange=250m)
-    - Kelompok B (100, 200, 300, 400 m): memakai langsung b-j100..b-j400 (konsisten maxRange=350m)
-    - Kelompok D (15-25 km/jam acak): dibandingkan terhadap Baseline* (20 km/jam seragam)
+    Buat 4 grafik PNG (Kelompok A, B, C, D).
+    - Kelompok A (10*, 20, 30), C (20*, 30, 40), dan D menggunakan referensi Baseline (maxRange=250m).
+    - Kelompok B (100, 200*, 300, 400) menggunakan 4 file Kelompok B termasuk b-j200 (maxRange=350m).
     """
     matplotlib = importlib.import_module("matplotlib")
     matplotlib.use("Agg")
@@ -300,19 +374,19 @@ def generate_plots(rows: List[Dict[str, Any]], out_dir: Path) -> List[Path]:
     saved: List[Path] = []
     base_rows = [r for r in rows if r["Kelompok_OFAT"] == "Baseline"]
 
-    # (Judul, Label X, Nilai Baseline yang di-inject bila perlu, Ticks Sumbu-X)
+    # (Judul, Label_X, Nilai_Baseline_Jika_Direuse, Daftar_Ticks_X)
     line_groups: Dict[str, Tuple[str, str, Optional[str], List[int]]] = {
         "A": ("Kelompok A - Variasi Kepadatan Kendaraan (Fase Multi-Hop)", "Jumlah Node Kendaraan", "10", [10, 20, 30]),
         "B": ("Kelompok B - Variasi Jarak Antar Barisan (Fase Multi-Hop)", "Jarak Antar Barisan (m)", None, [100, 200, 300, 400]),
-        "C": ("Kelompok C - Variasi Kecepatan Seragam (Fase Multi-Hop)", "Kecepatan Kendaraan (km/jam)", "20", [20, 30, 40]),
+        "C": ("Kelompok C - Variasi Kecepatan Seragam (Fase Multi-Hop)",   "Kecepatan Kendaraan (km/jam)", "20", [20, 30, 40]),
     }
 
     panel_specs = [
         ("PDR_pct",         "Packet Delivery Ratio (PDR)",          "PDR (%)",                 False),
         ("PLR_pct",         "Packet Loss Ratio (PLR)",              "PLR (%)",                 False),
         ("Avg_Delay_ms",    "Average End-to-End Delay",             "Delay (ms)",              False),
-        ("Throughput_kbps", "Throughput Jendela Multi-Hop (kbps)",  "Throughput (kbps)",       False),
-        ("RO_per_Sec",      "Routing Overhead per Detik (RO/s)",    "Paket Kontrol / s (log)", True),
+        ("Throughput_kbps", "Throughput Fase Multi-Hop (kbps)",     "Throughput (kbps)",       False),
+        ("RO_per_s",        "Routing Overhead per Detik (RO/s)",    "Paket Kontrol / s (log)", True),
         ("NRL_Ratio",       "Normalized Routing Load (NRL)",        "NRL (rasio, log)",        True),
     ]
 
@@ -411,13 +485,15 @@ def generate_plots(rows: List[Dict[str, Any]], out_dir: Path) -> List[Path]:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Parser & Visualisasi 40 Skenario VANET NS-3 (T_direct Multi-Hop Cut).")
-    ap.add_argument("-d", "--dir", default=r"c:\Perkuliahan\PBL\hasil_Simulasi", help="Folder file trace .tr")
+    ap = argparse.ArgumentParser(description="Parser & Visualisasi VANET NS-3 (40 File + Pemotongan T_direct).")
+    ap.add_argument("-d", "--dir", default=r"c:\Perkuliahan\PBL\hasil_Simulasi", help="Folder 40 file trace .tr")
     ap.add_argument("-o", "--output", default="master_vanet_40_skenario.csv", help="File Master CSV keluaran")
     ap.add_argument("--plot-dir", default="hasil_agregasi_40_skenario", help="Folder keluaran grafik PNG")
+    ap.add_argument("--tcl-dir", default=None, help="Folder opsional file mobilitas .tcl untuk hitung T_direct")
     args = ap.parse_args()
 
-    rows = export_master_csv(Path(args.dir), Path(args.output))
+    tcl_dir = Path(args.tcl_dir) if args.tcl_dir else None
+    rows = export_master_csv(Path(args.dir), Path(args.output), tcl_dir=tcl_dir)
     if rows:
         plots = generate_plots(rows, Path(args.plot_dir))
         for p in plots:
