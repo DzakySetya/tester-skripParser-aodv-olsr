@@ -14,23 +14,22 @@ import csv
 import re
 from pathlib import Path
 
-# Pola regex untuk membaca 1 baris paket IPv4/UDP dari file trace (.tr) NS-3
+# membaca pola file .tr NS-3 untuk membaca 1 baris paket IPv4/UDP
 LINE_RE = re.compile(
-    r"^([t+r])\s+([+\d.eE\-]+)(?:ns|us|ms|s)?\s+.*?/NodeList/(\d+)/.*?"
+    r"^([tr])\s+([+\d.eE\-]+)(?:ns|us|ms|s)?\s+.*?/NodeList/(\d+)/.*?"
     r"(?:Retry=(\d).*?)?(?:DA\(RA\)=([0-9a-fA-F:]{17}).*?)?"
     r"ns3::Ipv4Header\s*\(.*?ttl\s+(\d+)\s+id\s+(\d+)\s+protocol\s+17\s+.*?length:\s*\d+\s+"
     r"(\d+\.\d+\.\d+\.\d+)\s*>\s*(\d+\.\d+\.\d+\.\d+)\)\s*"
     r"ns3::UdpHeader\s*\(length:\s*(\d+)\s+(\d+)\s*>\s*(\d+)\)"
 )
 
-# Pola nama file: mendukung 40 nama file skenario maupun nama default output .cc (*-mh-normal/dos.tr)
+# membaca nama file
 FILE_RE = re.compile(
     r"^(aodv|olsr)-(baseline|mh|a-n(?:20|30)|b-j(?:100|200|300|400)|c-k(?:30|40)|d)-(normal|dos)$",
     re.IGNORECASE,
 )
 
-# Metadata eksperimen OFAT sesuai Proposal PBL (tanpa hardcode T_direct):
-# kode -> (Kelompok_OFAT, Variabel_Uji, Nilai_Variabel, Jumlah_Node, Jarak_m, Kecepatan_kmh, MaxRange_m)
+# (Kelompok_OFAT, Variabel_Uji, Nilai_Variabel, Jumlah_Node, Jarak_m, Kecepatan_kmh, MaxRange_m)
 SCENARIO_MAP = {
     "baseline": ("Baseline", "Baseline",      "Baseline", 10, 200, "20",    250),
     "a-n20":    ("A",        "Kepadatan",     "20",       20, 200, "20",    250),
@@ -72,7 +71,7 @@ CSV_COLUMNS = [
 ]
 
 
-def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_size=512, id_wrap_window=60.0):
+def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_size=512):
     """
     Membaca satu file .tr secara single-pass dan menghitung metrik QoS serta Routing Overhead.
     Jika t_direct=None, batas waktu T_direct dideteksi otomatis dari detik pertama paket
@@ -82,13 +81,12 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
     tx_times = {}
     rx_records = {}
     pileup_seen = set()
-    epochs = {}
     ro_times = []
     last_trace_t = 0.0
 
     with Path(filepath).open("r", encoding="utf-8", errors="replace") as fh:
         for line in fh:
-            if not line or line[0] not in ("t", "+", "r") or "Ipv4Header" not in line:
+            if not line or line[0] not in ("t", "r") or "Ipv4Header" not in line:
                 continue
 
             m = LINE_RE.match(line)
@@ -107,7 +105,7 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
 
             # 1. Paket kontrol routing (AODV port 654, OLSR port 698) sebelum T_direct
             if sport in (654, 698) or dport in (654, 698):
-                if ev in ("t", "+") and not is_retry and t < cutoff:
+                if ev == "t" and not is_retry and t < cutoff:
                     ro_times.append(t)
                 continue
 
@@ -123,23 +121,12 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
             src_node = int(src.rsplit(".", 1)[1]) - 1
             dst_node = int(dst.rsplit(".", 1)[1]) - 1
             ipid = int(ipid_s)
-            base_key = (src, dst, ipid)
 
             # Catat waktu kirim (Tx) dari node0 sebelum batas T_direct
-            if ev in ("t", "+"):
+            if ev == "t":
                 if is_retry or node != src_node:
                     continue
-                ent = epochs.get(base_key)
-                if ent is None:
-                    epochs[base_key] = [0, t]
-                    ep = 0
-                else:
-                    if t - ent[1] > id_wrap_window:
-                        ent[0] += 1
-                    ent[1] = t
-                    ep = ent[0]
-
-                uid = (src, dst, ipid, ep)
+                uid = (src, dst, ipid)
                 if t < cutoff and uid not in tx_times:
                     tx_times[uid] = t
 
@@ -147,9 +134,7 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
             elif ev == "r" and node == dst_node:
                 if not da_mac or (int(da_mac[-2:], 16) - 1) != dst_node:
                     continue
-                ent = epochs.get(base_key)
-                ep = ent[0] if ent is not None else 0
-                uid = (src, dst, ipid, ep)
+                uid = (src, dst, ipid)
                 hop = 64 - int(ttl_s) + 1
 
                 # Deteksi otomatis T_direct saat paket 1-hop (TTL = 64) pertama kali tiba di penerima
@@ -214,12 +199,6 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
 
 
 def export_master_csv(trace_dir, csv_path):
-    """
-    Memproses seluruh file .tr di dalam folder secara single-pass.
-    Untuk setiap skenario, file AODV-Normal diproses lebih dulu guna mendeteksi T_direct
-    secara otomatis dari paket TTL = 64 pertama, lalu nilai T_direct tersebut dipakai
-    bersama untuk kondisi DoS dan protokol OLSR pada skenario yang sama.
-    """
     matched_files = []
 
     for p in sorted(Path(trace_dir).rglob("*.tr")):
