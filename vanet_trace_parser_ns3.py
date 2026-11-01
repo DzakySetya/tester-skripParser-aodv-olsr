@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-vanet_trace_parser_ns3.py
-=========================
-Skrip parser trace file (.tr) simulasi VANET NS-3 (AODV vs OLSR | Normal vs DoS)
-dengan deteksi otomatis batas waktu fase multi-hop (T_direct) berdasarkan kemunculan
-pertama paket 1-hop (TTL = 64) di node penerima akhir.
-Hasil diekspor ke CSV untuk pembuatan grafik di Spreadsheet/Excel.
-"""
 
 import argparse
 import csv
@@ -68,21 +60,27 @@ CSV_COLUMNS = [
     "Routing_Overhead_Pkts",
     "RO_per_s",
     "NRL_Ratio",
+    "RO_Ratio",
+    "RO_Bytes",
+    "RO_Bytes_per_s",
+    "NRL_Bytes_Ratio",
+    "olsrHelloMsgs",
+    "olsrTcMsgs",
+    "aodvRreq",
+    "aodvRrep",
+    "aodvRerr",
+    "aodvHello",
 ]
 
 
 def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_size=512):
-    """
-    Membaca satu file .tr secara single-pass dan menghitung metrik QoS serta Routing Overhead.
-    Jika t_direct=None, batas waktu T_direct dideteksi otomatis dari detik pertama paket
-    1-hop (TTL = 64) diterima oleh node tujuan akhir (node N-2).
-    """
     cutoff = t_direct if t_direct is not None else float("inf")
     tx_times = {}
     rx_records = {}
     pileup_seen = set()
-    ro_times = []
+    ro_records = []
     last_trace_t = 0.0
+    is_olsr = Path(filepath).name.lower().startswith("olsr")
 
     with Path(filepath).open("r", encoding="utf-8", errors="replace") as fh:
         for line in fh:
@@ -106,7 +104,22 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
             # 1. Paket kontrol routing (AODV port 654, OLSR port 698) sebelum T_direct
             if sport in (654, 698) or dport in (654, 698):
                 if ev == "t" and not is_retry and t < cutoff:
-                    ro_times.append(t)
+                    ctrl_bytes = max(0, int(ulen_s) - 8)
+                    if sport == 698 or dport == 698:
+                        oh = line.count("ns3::olsr::MessageHeader (type: HELLO")
+                        ot = line.count("ns3::olsr::MessageHeader (type: TC")
+                        ro_records.append((t, ctrl_bytes, oh, ot, 0, 0, 0, 0))
+                    else:
+                        rq = 1 if "ns3::aodv::TypeHeader (RREQ)" in line else 0
+                        rr = 0
+                        ah = 0
+                        if "ns3::aodv::TypeHeader (RREP)" in line:
+                            if dst == "255.255.255.255" or dst.endswith(".255"):
+                                ah = 1
+                            else:
+                                rr = 1
+                        re_cnt = 1 if "ns3::aodv::TypeHeader (RERR)" in line else 0
+                        ro_records.append((t, ctrl_bytes, 0, 0, rq, rr, re_cnt, ah))
                 continue
 
             # 2. Abaikan paket serangan DoS UDP broadcast (10.1.1.255 / 255.255.255.255, port 4000, 1024 byte)
@@ -153,9 +166,16 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
     if t_direct is not None:
         tx_times = {uid: t0 for uid, t0 in tx_times.items() if t0 < cutoff}
         rx_records = {uid: val for uid, val in rx_records.items() if uid in tx_times}
-        ro_packets = sum(1 for t_ro in ro_times if t_ro < cutoff)
-    else:
-        ro_packets = len(ro_times)
+        ro_records = [rec for rec in ro_records if rec[0] < cutoff]
+
+    ro_packets = len(ro_records)
+    ro_bytes = sum(rec[1] for rec in ro_records)
+    olsr_hello = sum(rec[2] for rec in ro_records)
+    olsr_tc = sum(rec[3] for rec in ro_records)
+    aodv_rreq = sum(rec[4] for rec in ro_records)
+    aodv_rrep = sum(rec[5] for rec in ro_records)
+    aodv_rerr = sum(rec[6] for rec in ro_records)
+    aodv_hello = sum(rec[7] for rec in ro_records)
 
     tx_count = len(tx_times)
     rx_count = len(rx_records)
@@ -178,7 +198,10 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
         else 0.0
     )
     ro_per_s = (ro_packets / window_dur) if window_dur > 0.0 else 0.0
+    ro_bytes_per_s = (ro_bytes / window_dur) if window_dur > 0.0 else 0.0
+    ro_ratio = (ro_packets / tx_count) if tx_count > 0 else 0.0
     nrl = (ro_packets / rx_count) if rx_count > 0 else 0.0
+    nrl_bytes = (ro_bytes / (rx_count * legal_size)) if (rx_count > 0 and legal_size > 0) else 0.0
 
     return {
         "T_direct_s": round(t_direct, 2) if t_direct is not None else "FullRun",
@@ -195,6 +218,16 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
         "Routing_Overhead_Pkts": ro_packets,
         "RO_per_s": round(ro_per_s, 4),
         "NRL_Ratio": round(nrl, 4),
+        "RO_Ratio": round(ro_ratio, 4),
+        "RO_Bytes": ro_bytes,
+        "RO_Bytes_per_s": round(ro_bytes_per_s, 4),
+        "NRL_Bytes_Ratio": round(nrl_bytes, 4),
+        "olsrHelloMsgs": olsr_hello if is_olsr else "-",
+        "olsrTcMsgs": olsr_tc if is_olsr else "-",
+        "aodvRreq": "-" if is_olsr else aodv_rreq,
+        "aodvRrep": "-" if is_olsr else aodv_rrep,
+        "aodvRerr": "-" if is_olsr else aodv_rerr,
+        "aodvHello": "-" if is_olsr else aodv_hello,
     }
 
 
@@ -202,7 +235,7 @@ def export_master_csv(trace_dir, csv_path):
     matched_files = []
 
     for p in sorted(Path(trace_dir).rglob("*.tr")):
-        m = FILE_RE.match(p.stem)
+        m = FILE_RE.match(p.stem)   
         if not m:
             continue
         proto, raw_tok, cond = m.group(1).upper(), m.group(2).lower(), m.group(3).lower()
@@ -253,7 +286,7 @@ def export_master_csv(trace_dir, csv_path):
             f"Grp={grp:<8} Val={val_str:<8} T_dir={str(metrics['T_direct_s']):<7} | "
             f"Tx={metrics['Tx_Packets']:>6} Rx={metrics['Rx_Packets']:>6} PileUp={metrics['OneHop_PileUp_Received']:>4} "
             f"PDR={metrics['PDR_pct']:>6.2f}% Delay={metrics['Avg_Delay_ms']:>6.2f}ms "
-            f"Tput={metrics['Throughput_kbps']:>6.2f}kbps RO/s={metrics['RO_per_s']:>6.2f} NRL={metrics['NRL_Ratio']:>8.2f}"
+            f"Tput={metrics['Throughput_kbps']:>6.2f}kbps RO={metrics['RO_Ratio']:>6.4f} RO_B={metrics['RO_Bytes']:>7} NRL={metrics['NRL_Ratio']:>8.2f}"
         )
 
     out_file = Path(csv_path)
