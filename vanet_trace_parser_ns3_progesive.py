@@ -230,8 +230,8 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
 
     pdr_pct = (rx_count / tx_count * 100.0) if tx_count > 0 else 0.0
     plr_pct = (lost_count / tx_count * 100.0) if tx_count > 0 else 100.0
-    avg_delay_ms = (delay_sum_s / rx_count * 1000.0) if rx_count > 0 else 0.0
-    hop_mean = (hop_sum / rx_count) if rx_count > 0 else 0.0
+    avg_delay_ms = round(delay_sum_s / rx_count * 1000.0, 4) if rx_count > 0 else "N/A"
+    hop_mean = round(hop_sum / rx_count, 4) if rx_count > 0 else "N/A"
     throughput_kbps = (
         (rx_count * legal_size * 8.0) / (window_dur * 1000.0)
         if (rx_count > 0 and window_dur > 0.0)
@@ -239,7 +239,7 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
     )
     ro_per_s = (ro_packets / window_dur) if window_dur > 0.0 else 0.0
     ro_bytes_per_s = (ro_bytes / window_dur) if window_dur > 0.0 else 0.0
-    ro_ratio = (ro_packets / tx_count) if tx_count > 0 else 0.0
+    ro_ratio = round(ro_packets / tx_count, 4) if tx_count > 0 else "N/A"
     nrl = round(ro_packets / rx_count, 4) if rx_count > 0 else "N/A"
     nrl_bytes = (
         round(ro_bytes / (rx_count * legal_size), 4)
@@ -254,15 +254,15 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
         "Rx_Packets": rx_count,
         "Lost_Packets": lost_count,
         "OneHop_PileUp_Received": pileup_count,
-        "Hop_Count_Mean": round(hop_mean, 4),
+        "Hop_Count_Mean": hop_mean,
         "Throughput_kbps": round(throughput_kbps, 4),
         "PDR_pct": round(pdr_pct, 4),
         "PLR_pct": round(plr_pct, 4),
-        "Avg_Delay_ms": round(avg_delay_ms, 4),
+        "Avg_Delay_ms": avg_delay_ms,
         "Routing_Overhead_Pkts": ro_packets,
         "RO_per_s": round(ro_per_s, 4),
         "NRL_Ratio": nrl,
-        "RO_Ratio": round(ro_ratio, 4),
+        "RO_Ratio": ro_ratio,
         "RO_Bytes": ro_bytes,
         "RO_Bytes_per_s": round(ro_bytes_per_s, 4),
         "NRL_Bytes_Ratio": nrl_bytes,
@@ -407,13 +407,33 @@ def export_master_csv(trace_dir, csv_path):
             **prog_values,
         }
         rows.append(row)
+        d_str = (
+            f"{metrics['Avg_Delay_ms']:>6.2f}ms"
+            if isinstance(metrics["Avg_Delay_ms"], (int, float))
+            else f"{str(metrics['Avg_Delay_ms']):>8}"
+        )
+        pm_d_str = (
+            f"{prog_values['ProgMean_Avg_Delay_ms']:>6.2f}ms"
+            if isinstance(prog_values["ProgMean_Avg_Delay_ms"], (int, float))
+            else f"{str(prog_values['ProgMean_Avg_Delay_ms']):>8}"
+        )
+        ro_str = (
+            f"{metrics['RO_Ratio']:>6.4f}"
+            if isinstance(metrics["RO_Ratio"], (int, float))
+            else f"{str(metrics['RO_Ratio']):>6}"
+        )
+        pm_ro_str = (
+            f"{prog_values['ProgMean_RO_Ratio']:>6.4f}"
+            if isinstance(prog_values["ProgMean_RO_Ratio"], (int, float))
+            else f"{str(prog_values['ProgMean_RO_Ratio']):>6}"
+        )
         print(
             f"[{idx:02d}/{total:02d}] {path.name:<28} | {proto:<4} {cond:<6} Run={run_num:>2} | "
             f"Grp={grp:<8} Val={val_str:<8} T_dir={str(metrics['T_direct_s']):<7} | "
             f"PDR={metrics['PDR_pct']:>6.2f}% (PM={prog_values['ProgMean_PDR_pct']:>6.2f}%) "
-            f"Delay={metrics['Avg_Delay_ms']:>6.2f}ms (PM={prog_values['ProgMean_Avg_Delay_ms']:>6.2f}ms) "
+            f"Delay={d_str} (PM={pm_d_str}) "
             f"Tput={metrics['Throughput_kbps']:>6.2f}kbps (PM={prog_values['ProgMean_Throughput_kbps']:>6.2f}kbps) "
-            f"RO={metrics['RO_Ratio']:>6.4f} (PM={prog_values['ProgMean_RO_Ratio']:>6.4f})"
+            f"RO={ro_str} (PM={pm_ro_str})"
         )
 
     out_file = Path(csv_path)
