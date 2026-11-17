@@ -15,9 +15,9 @@ LINE_RE = re.compile(
     r"ns3::UdpHeader\s*\(length:\s*(\d+)\s+(\d+)\s*>\s*(\d+)\)"
 )
 
-# membaca nama file (mendukung 1x run, format Windows "(2)".."(10)", maupun "-run1".."-run10")
+# membaca nama file 
 FILE_RE = re.compile(
-    r"^(aodv|olsr)-(baseline|mh|a-n(?:20|30)|b-j(?:100|200|300|400)|c-k(?:30|40)|d)-(normal|dos)"
+    r"^(aodv|olsr)-(baseline|mh|realmap|a-n(?:20|30|70|120)|b-j(?:100|200|300|400)|c-k(?:30|40)|d)-(normal|dos)"
     r"(?:\s*\((\d+)\)|[-_](?:run|rep|seed)?(\d+))?$",
     re.IGNORECASE,
 )
@@ -25,8 +25,11 @@ FILE_RE = re.compile(
 # (Kelompok_OFAT, Variabel_Uji, Nilai_Variabel, Jumlah_Node, Jarak_m, Kecepatan_kmh, MaxRange_m)
 SCENARIO_MAP = {
     "baseline": ("Baseline", "Baseline",      "Baseline", 10, 200, "20",    250),
+    "mh":       ("RealMap",  "RealMap",       "RealMap",  90, "-", "-",     250),
     "a-n20":    ("A",        "Kepadatan",     "20",       20, 200, "20",    250),
     "a-n30":    ("A",        "Kepadatan",     "30",       30, 200, "20",    250),
+    "a-n70":    ("A",        "Kepadatan",     "70",       70, 200, "20",    250),
+    "a-n120":   ("A",        "Kepadatan",     "120",     120, 200, "20",    250),
     "b-j100":   ("B",        "Jarak",         "100",      10, 100, "20",    350),
     "b-j200":   ("B",        "Jarak",         "200",      10, 200, "20",    350),
     "b-j300":   ("B",        "Jarak",         "300",      10, 300, "20",    350),
@@ -113,7 +116,7 @@ PROG_MEAN_SPECS = [
 ]
 
 
-def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_size=512):
+def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_size=512, detect_tdirect=True):
     cutoff = t_direct if t_direct is not None else float("inf")
     tx_times = {}
     rx_records = {}
@@ -191,7 +194,7 @@ def parse_trace(filepath, t_direct=None, app_start_s=5.0, legal_port=9, legal_si
                 hop = 64 - int(ttl_s) + 1
 
                 # Deteksi otomatis T_direct saat paket 1-hop (TTL = 64) pertama kali tiba di penerima
-                if hop == 1:
+                if hop == 1 and detect_tdirect:
                     if uid not in pileup_seen:
                         pileup_seen.add(uid)
                     if t_direct is None:
@@ -294,7 +297,7 @@ def export_master_csv(trace_dir, csv_path):
         )
         run_str = paren_run or dash_run
         run_num = int(run_str) if run_str is not None else 1
-        tok = "baseline" if raw_tok == "mh" else raw_tok
+        tok = "mh" if raw_tok in ("mh", "realmap") else raw_tok
         cond_label = "DoS" if cond == "dos" else "Normal"
 
         dup_key = (proto, cond_label, tok, run_num)
@@ -344,7 +347,7 @@ def export_master_csv(trace_dir, csv_path):
         else:
             t_dir_in = None
 
-        metrics = parse_trace(path, t_direct=t_dir_in)
+        metrics = parse_trace(path, t_direct=t_dir_in, detect_tdirect=(tok != "mh"))
         val_t = metrics["T_direct_s"]
         t_float = float(val_t) if isinstance(val_t, (int, float)) else None
 
